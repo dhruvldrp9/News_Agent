@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nova AI Assistant</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header class="app-header">
+            <div class="header-content">
+                <h1>Nova AI</h1>
+                <input type="hidden" id="sessionId" value="{{ session_id }}">
+                <div class="header-actions">
+                    <button id="newChatBtn" class="icon-btn">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                    <button id="settingsBtn" class="icon-btn">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                    <!-- <button id="themeSwitchBtn" class="icon-btn">
+                        <i class="fas fa-moon"></i>
+                    </button> -->
+                </div>
+            </div>
+        </header>
+
+        <main class="app-main">
+            <div class="voice-controls">
+                <button id="microphoneBtn" class="mic-btn">
+                    <i class="fas fa-microphone"></i>
+                </button>
+                <div id="voiceStatus" class="voice-status"></div>
+            </div>
+
+            <div id="chatWindow" class="chat-window">
+                <div id="chatMessages" class="chat-messages">
+                    <div class="message-container bot-message-container">
+                        <div class="message-avatar bot-avatar">AI</div>
+                        <div class="message bot-message">
+                            Hi! I'm Nova, your AI assistant. How can I help you today?
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-container">
+                <div class="input-wrapper">
+                    <input type="text" id="userInput" placeholder="Type your message...">
+                    <button id="sendBtn" class="send-btn">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2>Settings</h2>
+            <div class="settings-group">
+                <label>Voice Language</label>
+                <select id="voiceLangSelect">
+                    <option value="en-US">English (US)</option>
+                    <option value="en-GB">English (UK)</option>
+                    <option value="es-ES">Spanish</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
