@@ -10,6 +10,37 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeModalBtn = document.querySelector('.close-btn');
     const chatWindow = document.getElementById('chatWindow');
 
+    const speechSynthesis = window.speechSynthesis;
+    let isSpeaking = false;
+
+    function speakText(text) {
+        // Stop any ongoing speech
+        if (speechSynthesis.speaking) {
+            speechSynthesis.cancel();
+        }
+
+        // Create speech utterance
+        const utterance = new SpeechSynthesisUtterance(text);
+        
+        // Optional: Customize voice and settings
+        utterance.rate = 1.0; // Speaking rate
+        utterance.pitch = 1.0; // Voice pitch
+
+        // Event listeners for speech status
+        utterance.onstart = () => {
+            isSpeaking = true;
+            microphoneBtn.classList.add('speaking');
+        };
+
+        utterance.onend = () => {
+            isSpeaking = false;
+            microphoneBtn.classList.remove('speaking');
+        };
+
+        // Speak the text
+        speechSynthesis.speak(utterance);
+    }
+
     // Scroll to bottom function
     function scrollToBottom() {
        
@@ -62,8 +93,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const recognition = SpeechRecognition ? new SpeechRecognition() : null;
 
     if (recognition) {
-        recognition.continuous = true;
-        recognition.interimResults = true;
+        recognition.continuous = false;
+        recognition.interimResults = false;
         recognition.lang = 'en-US';
 
         let isRecognizing = false;
@@ -73,21 +104,21 @@ document.addEventListener('DOMContentLoaded', () => {
             isRecognizing = true;
             microphoneBtn.classList.add('active');
             
-            // Set a timeout to check for no speech
-            noSpeechTimeout = setTimeout(() => {
-                if (isRecognizing) {
-                    const errorMessageContainer = document.createElement('div');
-                    errorMessageContainer.classList.add('message-container', 'bot-message-container');
-                    errorMessageContainer.innerHTML = `
-                        <div class="message-avatar bot-avatar">AI</div>
-                        <div class="message bot-message">No speech detected. Please speak clearly or check your microphone.</div>
-                    `;
-                    chatMessages.appendChild(errorMessageContainer);
-                    scrollToBottom();
+            // // Set a timeout to check for no speech
+            // noSpeechTimeout = setTimeout(() => {
+            //     if (isRecognizing) {
+            //         // const errorMessageContainer = document.createElement('div');
+            //         // errorMessageContainer.classList.add('message-container', 'bot-message-container');
+            //         // errorMessageContainer.innerHTML = `
+            //         //     <div class="message-avatar bot-avatar">AI</div>
+            //         //     <div class="message bot-message">No speech detected. Please speak clearly or check your microphone.</div>
+            //         // `;
+            //         // chatMessages.appendChild(errorMessageContainer);
+            //         // scrollToBottom();
                     
-                    recognition.stop();
-                }
-            }, 5000); // 5 seconds timeout
+            //         recognition.stop();
+            //     }
+            // }, 2000); // 2 seconds timeout
         };
 
         recognition.onresult = (event) => {
@@ -109,38 +140,41 @@ document.addEventListener('DOMContentLoaded', () => {
         recognition.onerror = (event) => {
             console.error('Speech recognition error:', event.error);
             
-            let errorMessage = 'An error occurred with speech recognition.';
-            switch(event.error) {
-                case 'no-speech':
-                    errorMessage = 'No speech detected. Please speak clearly or check your microphone.';
-                    break;
-                case 'audio-capture':
-                    errorMessage = 'No microphone was found. Ensure your microphone is connected.';
-                    break;
-                case 'not-allowed':
-                    errorMessage = 'Permission to use microphone was denied. Please check your browser settings.';
-                    break;
-            }
+            // let errorMessage = 'An error occurred with speech recognition.';
+            // switch(event.error) {
+            //     case 'no-speech':
+            //         errorMessage = 'No speech detected. Please speak clearly or check your microphone.';
+            //         break;
+            //     case 'audio-capture':
+            //         errorMessage = 'No microphone was found. Ensure your microphone is connected.';
+            //         break;
+            //     case 'not-allowed':
+            //         errorMessage = 'Permission to use microphone was denied. Please check your browser settings.';
+            //         break;
+            // }
 
-            const errorMessageContainer = document.createElement('div');
-            errorMessageContainer.classList.add('message-container', 'bot-message-container');
-            errorMessageContainer.innerHTML = `
-                <div class="message-avatar bot-avatar">AI</div>
-                <div class="message bot-message">${errorMessage}</div>
-            `;
-            chatMessages.appendChild(errorMessageContainer);
-            scrollToBottom();
+            // const errorMessageContainer = document.createElement('div');
+            // errorMessageContainer.classList.add('message-container', 'bot-message-container');
+            // errorMessageContainer.innerHTML = `
+            //     <div class="message-avatar bot-avatar">AI</div>
+            //     <div class="message bot-message">${errorMessage}</div>
+            // `;
+            // chatMessages.appendChild(errorMessageContainer);
+            // scrollToBottom();
 
-            microphoneBtn.classList.remove('active');
-            isRecognizing = false;
+            // microphoneBtn.classList.remove('active');
+            // isRecognizing = false;
 
-            // Clear the timeout if an error occurs
-            if (noSpeechTimeout) {
-                clearTimeout(noSpeechTimeout);
-            }
+            // // Clear the timeout if an error occurs
+            // if (noSpeechTimeout) {
+            //     clearTimeout(noSpeechTimeout);
+            // }
         };
 
         recognition.onend = () => {
+            if (isRecognizing) {
+                recognition.start(); // Automatically restart recognition
+            }
             microphoneBtn.classList.remove('active');
             isRecognizing = false;
 
@@ -153,7 +187,10 @@ document.addEventListener('DOMContentLoaded', () => {
         microphoneBtn.addEventListener('click', () => {
             if (!isRecognizing) {
                 recognition.start();
+                isSpeaking = true
             } else {
+                isSpeaking = false
+                isRecognizing = false;
                 recognition.stop();
             }
         });
@@ -201,6 +238,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="message bot-message">${data.response}</div>
             `;
             chatMessages.appendChild(botMessageContainer);
+
+            if (isSpeaking) {
+                // Speak the bot's response
+                speakText(data.response);
+            }
 
             // Use nextTick to ensure DOM has updated before scrolling
             setTimeout(() => {

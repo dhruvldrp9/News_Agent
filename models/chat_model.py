@@ -1,4 +1,8 @@
 import random
+from models.Communication_OpenAI import GPTConversationSystem
+import os
+
+communication_agent = GPTConversationSystem(os.getenv('OPENAI_API_KEY'))
 
 def generate_response(conversation_history):
     """
@@ -7,16 +11,9 @@ def generate_response(conversation_history):
     """
     last_user_message = conversation_history[-1]['content'] if conversation_history else ''
     
-    # Simple response generation logic
-    responses = [
-        f"I heard you say: {last_user_message}",
-        "That's interesting! Tell me more.",
-        "I'm processing your message.",
-        "Can you elaborate on that?",
-        "I'm listening carefully.",
-    ]
+    response = communication_agent.get_gpt_response(last_user_message)
 
-    return random.choice(responses)
+    return response
 
 def prepare_context(conversation_history):
     """
