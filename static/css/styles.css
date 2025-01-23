@@ -148,6 +148,7 @@ html, body {
 .user-avatar {
     background-color: var(--accent-color);
     color: white;
+    order: 2; 
 }
 
 .bot-avatar {
@@ -172,8 +173,7 @@ html, body {
 .user-message {
     background-color: var(--accent-color);
     color: white;
-    align-self: flex-end;
-    margin-left: auto;
+    margin-right: 10px; 
 }
 
 .input-container {
@@ -245,6 +245,15 @@ html, body {
     font-size: 28px;
     font-weight: bold;
     cursor: pointer;
+}
+
+.user-message-container {
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+    max-width: 100%;
+    flex-direction: row-reverse; 
+    align-self: flex-end; 
 }
 
 .close-btn:hover {
