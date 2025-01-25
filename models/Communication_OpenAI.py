@@ -3,6 +3,7 @@ import time
 from openai import OpenAI
 from serpapi import GoogleSearch
 from models.WebScrapper1 import WebScraper
+from models.summarizer import TextSummarizer
 
 
 class GPTConversationSystem:
@@ -11,15 +12,17 @@ class GPTConversationSystem:
         # Initialize OpenAI client
         self.client = OpenAI(api_key=openai_api_key)
         self.scrapper = WebScraper()
+        self.summarizer = TextSummarizer(10)
         
         # Audio recording settings
         self.samplerate = 44100
         self.channels = 1
 
-        self.agent = "General"
+        self.agent = "News"
+        self.conversation_history = None
         
         # Conversation history with carefully crafted system prompt
-        self.conversation_history = [
+        self.general_agent = [
             {
                 "role": "system",
                 "content": """You are an advanced AI assistant engaging in a natural spoken conversation. Your key characteristics are:
@@ -96,11 +99,18 @@ class GPTConversationSystem:
                 • Eliminate complex punctuation
                 • Use clear direct language
                 • Ensure smooth audio readability
-                        
-                
-                Here below are the news as per user asked now answer user question with below data."""
+
+                Strict Rules:
+                • Check user query that is related to news.
+                • Inform user to only ask about news.
+                """
             }
         ]
+        if self.agent == "News":
+            self.conversation_history = self.news_agent
+        else:
+            self.conversation_history = self.general_agent
+
         
         # Track conversation duration for context management
         self.conversation_start = time.time()
@@ -113,7 +123,7 @@ class GPTConversationSystem:
 
     def get_global_news(self,user_input):
         params = {
-        "engine": "google_news",
+        "engine": "google",
         "q": user_input,
         "gl": "in",
         "hl": "en",
@@ -122,18 +132,26 @@ class GPTConversationSystem:
 
         search = GoogleSearch(params)
         results = search.get_dict()
-        result_list = []
+        result_list = ''
         count = 0
-        for i in results["news_results"]:
-            text = self.scrapper.scrape(i['link'])
-            result_list.append(text)
-            count += 1
-            if count == 4:
-                break
-        return result_list
+        # filter_keywords = ["thehindu.com", "hindustantimes.com", "ndtv.com", "aajtak.in", "indiatoday.in"]
+        for i in results['organic_results']:
+            try:
+                # if any(keyword in i['link'] for keyword in filter_keywords):
+                text = self.scrapper.scrape(i['link'])
+                result_list += text
+                count += 1
+                if count == 4:
+                    break
+            except Exception as e:
+                continue
+
+
+        summarized_text = self.summarizer.summarize(result_list, 512, 'word')
+        return summarized_text
 
     def get_gpt_response(self, user_input: str) -> str:
-        """Get response from GPT model"""
+        """Get response from GPT model"""   
         try:
             # Check if we need to refresh context
             current_time = time.time()
@@ -145,18 +163,18 @@ class GPTConversationSystem:
                 ]
                 self.last_context_refresh = current_time
 
-            conversation_history = []
+            if self.agent == "News":
 
-            if self.agent == "General":
-                conversation_history = self.conversation_history
-            elif self.agent == "news":
-                conversation_history = self.news_agent
+                user_input = f"""Here is what found on google search news: {self.get_global_news(user_input)}.
+                You need to answer users query with your defined role and this available data only. 
 
-                conversation_history[0]['content'] += f"""{self.get_global_news(user_input)}
+                here is a user query: {user_input}.
+
+                answer user query.
                 """
             
             # Add user message to conversation
-            conversation_history.append({
+            self.conversation_history.append({
                 "role": "user",
                 "content": user_input
             })
@@ -166,9 +184,9 @@ class GPTConversationSystem:
             # Get response from GPT
             response = self.client.chat.completions.create(
                 model="gpt-3.5-turbo",
-                messages=conversation_history,
+                messages=self.conversation_history,
                 temperature=0.7,
-                max_tokens=100,
+                max_tokens=512,
                 top_p=0.9,
                 frequency_penalty=0.5,
                 presence_penalty=0.5

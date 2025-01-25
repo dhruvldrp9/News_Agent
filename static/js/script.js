@@ -123,9 +123,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         recognition.onresult = (event) => {
             // Clear the no-speech timeout when speech is detected
-            if (noSpeechTimeout) {
-                clearTimeout(noSpeechTimeout);
-            }
 
             const results = event.results;
             const last = results.length - 1;
@@ -179,9 +176,6 @@ document.addEventListener('DOMContentLoaded', () => {
             isRecognizing = false;
 
             // Clear the timeout when recognition ends
-            if (noSpeechTimeout) {
-                clearTimeout(noSpeechTimeout);
-            }
         };
 
         microphoneBtn.addEventListener('click', () => {
