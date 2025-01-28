@@ -4,6 +4,7 @@ from openai import OpenAI
 from serpapi import GoogleSearch
 from models.WebScrapper1 import WebScraper
 from models.summarizer import TextSummarizer
+from elevenlabs import ElevenLabs
 
 
 class GPTConversationSystem:
@@ -13,6 +14,8 @@ class GPTConversationSystem:
         self.client = OpenAI(api_key=openai_api_key)
         self.scrapper = WebScraper()
         self.summarizer = TextSummarizer(10)
+
+        self.eleven_client = ElevenLabs(api_key=os.getenv("ELEVENLABS_API_KEY"))
         
         # Audio recording settings
         self.samplerate = 44100
@@ -133,16 +136,12 @@ class GPTConversationSystem:
         search = GoogleSearch(params)
         results = search.get_dict()
         result_list = ''
-        count = 0
-        # filter_keywords = ["thehindu.com", "hindustantimes.com", "ndtv.com", "aajtak.in", "indiatoday.in"]
+        filter_keywords = ["thehindu.com", "hindustantimes.com", "ndtv.com", "aajtak.in", "indiatoday.in"]
         for i in results['organic_results']:
             try:
-                # if any(keyword in i['link'] for keyword in filter_keywords):
-                text = self.scrapper.scrape(i['link'])
-                result_list += text
-                count += 1
-                if count == 4:
-                    break
+                if any(keyword in i['link'] for keyword in filter_keywords):
+                    text = self.scrapper.scrape(i['link'])
+                    result_list += text
             except Exception as e:
                 continue
 
@@ -166,7 +165,7 @@ class GPTConversationSystem:
             if self.agent == "News":
 
                 user_input = f"""Here is what found on google search news: {self.get_global_news(user_input)}.
-                You need to answer users query with your defined role and this available data only. 
+                You need to answer users query with your defined role and this available data only. if don't found any data answer that question if you have proper knowledge, else ask user to provide proper question.
 
                 here is a user query: {user_input}.
 
@@ -206,3 +205,17 @@ class GPTConversationSystem:
         except Exception as e:
             print(f"Error getting GPT response: {str(e)}")
             return "I apologize, but I encountered an error. Could you please repeat that?"
+        
+    def text_to_speech_stream(self, text: str):
+        """Convert text to speech and return audio stream"""
+        try:
+            audio_stream = self.eleven_client.text_to_speech.convert_as_stream(
+                voice_id="JBFqnCBsd6RMkjVDRZzb",
+                output_format="mp3_44100_128",
+                text=text,
+                model_id="eleven_multilingual_v2"
+            )
+            return audio_stream
+        except Exception as e:
+            print(f"Error in text to speech conversion: {str(e)}")
+            return None

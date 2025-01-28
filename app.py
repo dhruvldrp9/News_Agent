@@ -1,5 +1,5 @@
-from flask import Flask, render_template, request, jsonify
-from models.chat_model import generate_response
+from flask import Flask, render_template, request, jsonify, Response
+from models.chat_model import generate_response, text_to_speech_stream
 import uuid
 
 app = Flask(__name__)
@@ -48,6 +48,23 @@ def chat():
             'response': 'Sorry, I encountered an error processing your message.',
             'error': str(e)
         }), 500
+    
+@app.route('/speak', methods=['POST'])
+def speak():
+    data = request.json
+    text = data['text']
+    
+    # Get audio stream
+    audio_stream = text_to_speech_stream(text)
+    
+    if audio_stream:
+        def generate():
+            for chunk in audio_stream:
+                yield chunk
+                
+        return Response(generate(), mimetype='audio/mpeg')
+    else:
+        return {'error': 'Text to speech conversion failed'}, 500
 
 if __name__ == '__main__':
     app.run(debug=True)

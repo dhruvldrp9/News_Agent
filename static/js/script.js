@@ -10,35 +10,84 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeModalBtn = document.querySelector('.close-btn');
     const chatWindow = document.getElementById('chatWindow');
 
-    const speechSynthesis = window.speechSynthesis;
+
+    let audioElement = null;
     let isSpeaking = false;
+    let isRecognizing = false;
 
-    function speakText(text) {
-        // Stop any ongoing speech
-        if (speechSynthesis.speaking) {
-            speechSynthesis.cancel();
-        }
+    // Speech Recognition
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = SpeechRecognition ? new SpeechRecognition() : null;
 
-        // Create speech utterance
-        const utterance = new SpeechSynthesisUtterance(text);
-        
-        // Optional: Customize voice and settings
-        utterance.rate = 1.0; // Speaking rate
-        utterance.pitch = 1.0; // Voice pitch
+    async function speakText(text) {
+        try {
+            // Stop any ongoing speech
+            if (audioElement && !audioElement.paused) {
+                audioElement.pause();
+                URL.revokeObjectURL(audioElement.src); // Clean up old audio URL
+                audioElement = null;
+            }
 
-        // Event listeners for speech status
-        utterance.onstart = () => {
-            isSpeaking = true;
-            microphoneBtn.classList.add('speaking');
-        };
+            const response = await fetch('/speak', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ text })
+            });
 
-        utterance.onend = () => {
+            if (!response.ok) {
+                throw new Error('Failed to convert text to speech');
+            }
+
+            const audioBlob = await response.blob();
+            const audioUrl = URL.createObjectURL(audioBlob);
+
+            // Create new audio element
+            audioElement = new Audio(audioUrl);
+            
+            audioElement.onplay = () => {
+                if (recognition) {
+                    recognition.stop();
+                }
+                isSpeaking = true;
+                isRecognizing = false;
+                microphoneBtn.classList.add('speaking');
+            };
+
+            audioElement.onended = () => {
+                if (recognition) {
+                    recognition.start();
+                }
+                isSpeaking = false;
+                isRecognizing = true;
+                microphoneBtn.classList.remove('speaking');
+                URL.revokeObjectURL(audioUrl); // Clean up
+                audioElement = null;
+            };
+
+            audioElement.onerror = (error) => {
+                console.error('Audio playback error:', error);
+                isSpeaking = false;
+                microphoneBtn.classList.remove('speaking');
+                URL.revokeObjectURL(audioUrl);
+                audioElement = null;
+            };
+
+            await audioElement.play().catch(error => {
+                console.error('Audio play error:', error);
+                throw error;
+            });
+
+        } catch (error) {
+            console.error('Error with text-to-speech:', error);
             isSpeaking = false;
             microphoneBtn.classList.remove('speaking');
-        };
-
-        // Speak the text
-        speechSynthesis.speak(utterance);
+            if (audioElement) {
+                URL.revokeObjectURL(audioElement.src);
+                audioElement = null;
+            }
+        }
     }
 
     // Scroll to bottom function
@@ -88,23 +137,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Speech Recognition
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    const recognition = SpeechRecognition ? new SpeechRecognition() : null;
-
     if (recognition) {
-        recognition.continuous = false;
+        recognition.continuous = true;
         recognition.interimResults = false;
         recognition.lang = 'en-US';
 
-        let isRecognizing = false;
-        let noSpeechTimeout;
-
         recognition.onstart = () => {
             isRecognizing = true;
+            isSpeaking = false;
             microphoneBtn.classList.add('active');
             
-            // // Set a timeout to check for no speech
+            // Set a timeout to check for no speech
             // noSpeechTimeout = setTimeout(() => {
             //     if (isRecognizing) {
             //         // const errorMessageContainer = document.createElement('div');
@@ -116,12 +159,14 @@ document.addEventListener('DOMContentLoaded', () => {
             //         // chatMessages.appendChild(errorMessageContainer);
             //         // scrollToBottom();
                     
-            //         recognition.stop();
+            //         // recognition.stop();
             //     }
             // }, 2000); // 2 seconds timeout
         };
 
         recognition.onresult = (event) => {
+            isRecognizing = false;
+            isSpeaking = true;
             // Clear the no-speech timeout when speech is detected
 
             const results = event.results;
@@ -169,19 +214,17 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         recognition.onend = () => {
-            if (isRecognizing) {
-                recognition.start(); // Automatically restart recognition
-            }
             microphoneBtn.classList.remove('active');
             isRecognizing = false;
+            isSpeaking = true;
 
             // Clear the timeout when recognition ends
         };
 
         microphoneBtn.addEventListener('click', () => {
-            if (!isRecognizing) {
+            if (!isRecognizing && !isSpeaking) {
                 recognition.start();
-                isSpeaking = true
+                isSpeaking = false
             } else {
                 isSpeaking = false
                 isRecognizing = false;

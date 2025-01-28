@@ -15,6 +15,9 @@ def generate_response(conversation_history):
 
     return response
 
+def text_to_speech_stream(text):
+    return communication_agent.text_to_speech_stream(text)
+
 def prepare_context(conversation_history):
     """
     Prepare conversation context for more advanced AI models.
