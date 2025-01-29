@@ -210,10 +210,10 @@ class GPTConversationSystem:
         """Convert text to speech and return audio stream"""
         try:
             audio_stream = self.eleven_client.text_to_speech.convert_as_stream(
-                voice_id="JBFqnCBsd6RMkjVDRZzb",
+                voice_id="mfMM3ijQgz8QtMeKifko",
                 output_format="mp3_44100_128",
                 text=text,
-                model_id="eleven_multilingual_v2"
+                model_id="eleven_flash_v2_5"
             )
             return audio_stream
         except Exception as e:

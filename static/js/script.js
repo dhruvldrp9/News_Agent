@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let audioElement = null;
     let isSpeaking = false;
     let isRecognizing = false;
+    let isListeningMode = false;
 
     // Speech Recognition
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -21,6 +22,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function speakText(text) {
         try {
+            // Stop recognition while speaking
+            if (recognition && isRecognizing) {
+                recognition.stop();
+                isRecognizing = false;
+            }
+
             // Stop any ongoing speech
             if (audioElement && !audioElement.paused) {
                 audioElement.pause();
@@ -47,23 +54,21 @@ document.addEventListener('DOMContentLoaded', () => {
             audioElement = new Audio(audioUrl);
             
             audioElement.onplay = () => {
-                if (recognition) {
-                    recognition.stop();
-                }
                 isSpeaking = true;
-                isRecognizing = false;
                 microphoneBtn.classList.add('speaking');
             };
 
             audioElement.onended = () => {
-                if (recognition) {
-                    recognition.start();
-                }
                 isSpeaking = false;
-                isRecognizing = true;
                 microphoneBtn.classList.remove('speaking');
-                URL.revokeObjectURL(audioUrl); // Clean up
+                URL.revokeObjectURL(audioUrl);
                 audioElement = null;
+
+                // Only restart recognition if we're still in listening mode
+                if (isListeningMode && recognition) {
+                    recognition.start();
+                    isRecognizing = true;
+                }
             };
 
             audioElement.onerror = (error) => {
@@ -72,6 +77,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 microphoneBtn.classList.remove('speaking');
                 URL.revokeObjectURL(audioUrl);
                 audioElement = null;
+
+                // Restart recognition on error if in listening mode
+                if (isListeningMode && recognition) {
+                    recognition.start();
+                    isRecognizing = true;
+                }
             };
 
             await audioElement.play().catch(error => {
@@ -86,6 +97,12 @@ document.addEventListener('DOMContentLoaded', () => {
             if (audioElement) {
                 URL.revokeObjectURL(audioElement.src);
                 audioElement = null;
+            }
+
+            // Restart recognition on error if in listening mode
+            if (isListeningMode && recognition) {
+                recognition.start();
+                isRecognizing = true;
             }
         }
     }
@@ -144,93 +161,62 @@ document.addEventListener('DOMContentLoaded', () => {
 
         recognition.onstart = () => {
             isRecognizing = true;
-            isSpeaking = false;
             microphoneBtn.classList.add('active');
-            
-            // Set a timeout to check for no speech
-            // noSpeechTimeout = setTimeout(() => {
-            //     if (isRecognizing) {
-            //         // const errorMessageContainer = document.createElement('div');
-            //         // errorMessageContainer.classList.add('message-container', 'bot-message-container');
-            //         // errorMessageContainer.innerHTML = `
-            //         //     <div class="message-avatar bot-avatar">AI</div>
-            //         //     <div class="message bot-message">No speech detected. Please speak clearly or check your microphone.</div>
-            //         // `;
-            //         // chatMessages.appendChild(errorMessageContainer);
-            //         // scrollToBottom();
-                    
-            //         // recognition.stop();
-            //     }
-            // }, 2000); // 2 seconds timeout
         };
 
         recognition.onresult = (event) => {
-            isRecognizing = false;
-            isSpeaking = true;
-            // Clear the no-speech timeout when speech is detected
-
             const results = event.results;
             const last = results.length - 1;
             const transcript = results[last][0].transcript;
 
-            // Only send the final result
-            if (results[last].isFinal) {
+            if (results[last].isFinal && isListeningMode) {
                 sendMessage(transcript);
             }
         };
 
         recognition.onerror = (event) => {
             console.error('Speech recognition error:', event.error);
-            
-            // let errorMessage = 'An error occurred with speech recognition.';
-            // switch(event.error) {
-            //     case 'no-speech':
-            //         errorMessage = 'No speech detected. Please speak clearly or check your microphone.';
-            //         break;
-            //     case 'audio-capture':
-            //         errorMessage = 'No microphone was found. Ensure your microphone is connected.';
-            //         break;
-            //     case 'not-allowed':
-            //         errorMessage = 'Permission to use microphone was denied. Please check your browser settings.';
-            //         break;
-            // }
+            isRecognizing = false;
+            microphoneBtn.classList.remove('active');
 
-            // const errorMessageContainer = document.createElement('div');
-            // errorMessageContainer.classList.add('message-container', 'bot-message-container');
-            // errorMessageContainer.innerHTML = `
-            //     <div class="message-avatar bot-avatar">AI</div>
-            //     <div class="message bot-message">${errorMessage}</div>
-            // `;
-            // chatMessages.appendChild(errorMessageContainer);
-            // scrollToBottom();
-
-            // microphoneBtn.classList.remove('active');
-            // isRecognizing = false;
-
-            // // Clear the timeout if an error occurs
-            // if (noSpeechTimeout) {
-            //     clearTimeout(noSpeechTimeout);
-            // }
+            // Restart recognition on error if in listening mode
+            if (isListeningMode && !isSpeaking) {
+                recognition.start();
+            }
         };
 
         recognition.onend = () => {
-            microphoneBtn.classList.remove('active');
             isRecognizing = false;
-            isSpeaking = true;
+            microphoneBtn.classList.remove('active');
 
-            // Clear the timeout when recognition ends
+            // Restart recognition if in listening mode and not speaking
+            if (isListeningMode && !isSpeaking) {
+                recognition.start();
+            }
         };
 
+        // Modified microphone button click handler
         microphoneBtn.addEventListener('click', () => {
-            if (!isRecognizing && !isSpeaking) {
-                recognition.start();
-                isSpeaking = false
+            isListeningMode = !isListeningMode; // Toggle listening mode
+
+            if (isListeningMode) {
+                // Starting listening mode
+                if (!isSpeaking) {
+                    recognition.start();
+                }
+                microphoneBtn.classList.add('listening-mode');
             } else {
-                isSpeaking = false
-                isRecognizing = false;
+                // Stopping listening mode
                 recognition.stop();
+                microphoneBtn.classList.remove('listening-mode');
+                if (audioElement) {
+                    audioElement.pause();
+                    URL.revokeObjectURL(audioElement.src);
+                    audioElement = null;
+                }
             }
         });
+
     } else {
         microphoneBtn.disabled = true;
     }
@@ -276,15 +262,11 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
             chatMessages.appendChild(botMessageContainer);
 
-            if (isSpeaking) {
-                // Speak the bot's response
+            if (isListeningMode) {
                 speakText(data.response);
             }
 
-            // Use nextTick to ensure DOM has updated before scrolling
-            setTimeout(() => {
-                scrollToBottom();
-            }, 0);
+            setTimeout(scrollToBottom, 0);
         })
         .catch(error => {
             console.error('Error:', error);
