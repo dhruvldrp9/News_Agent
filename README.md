@@ -1,5 +1,8 @@
 # News Agent - Real-Time News Communicator
 
+![News_Agent](https://github.com/user-attachments/assets/4a7199ce-a49c-494c-8f1f-f7c0887c3089)
+
+
 ## Overview
 News Agent is an intelligent bot that delivers **real-time news updates** to users. It fetches and analyzes the latest headlines using **Google SERP API**, **OpenAI LLM**, and **web scraping with Selenium**, ensuring users stay informed about breaking news, trending topics, and personalized news categories.
 
@@ -27,7 +30,7 @@ Ensure you have Python installed. You can download it from [python.org](https://
 ### Steps
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/news-agent.git
+   git clone https://github.com/dhruvldrp9/News_Agent.git
    cd news-agent
    ```
 2. Install dependencies:
