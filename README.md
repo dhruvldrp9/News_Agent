@@ -1,6 +1,7 @@
 # News Agent - Real-Time News Communicator
 
-![News_Agent](https://github.com/user-attachments/assets/4a7199ce-a49c-494c-8f1f-f7c0887c3089)
+![News_Agent](https://github.com/user-attachments/assets/59877a36-1c0d-4deb-b49b-2d968e5c663c)
+
 
 
 ## Overview
