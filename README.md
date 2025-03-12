@@ -1,64 +1,62 @@
-# News Agent - Real-Time News Communicator
 
-![News_Agent](https://github.com/user-attachments/assets/59877a36-1c0d-4deb-b49b-2d968e5c663c)
+# Nova AI News Assistant
 
-
+![News Agent](https://github.com/user-attachments/assets/59877a36-1c0d-4deb-b49b-2d968e5c663c)
 
 ## Overview
-News Agent is an intelligent bot that delivers **real-time news updates** to users. It fetches and analyzes the latest headlines using **Google SERP API**, **OpenAI LLM**, and **web scraping with Selenium**, ensuring users stay informed about breaking news, trending topics, and personalized news categories.
+Nova is an intelligent AI-powered news assistant that delivers real-time news updates through natural conversation. It uses Groq LLM for processing, Google SERP API for news searching, and web scraping with Selenium to provide comprehensive news coverage.
 
 ## Features
-- **Real-Time News Fetching**: Retrieves the latest headlines using Google SERP API.
-- **AI-Powered Summarization**: Uses OpenAI LLM to generate concise summaries of news articles.
-- **Web Scraping with Selenium**: Extracts detailed information from news websites.
-- **User Interaction**: Communicates with users via chat, notifications, or voice updates.
-- **Personalized News Feed**: Filters news based on user preferences (e.g., technology, politics, sports).
-- **Multi-Source Aggregation**: Gathers news from multiple sources for a comprehensive view.
-- **Alert System**: Sends push notifications for critical news events.
+- **AI-Powered News Delivery**: Get the latest news through natural conversation
+- **Voice Interaction**: Speak to Nova and listen to news summaries via ElevenLabs TTS
+- **Multi-Source News Aggregation**: News collected from reliable sources
+- **Real-Time Updates**: Stay informed about breaking news
+- **Responsive UI**: Works seamlessly on both desktop and mobile
+- **Light Theme**: Clean, modern interface for easy reading
 
-## Technologies Used
-- **Python**
-- **Google SERP API** (for fetching news results)
-- **OpenAI LLM** (for generating summaries and insights)
-- **Selenium** (for web scraping)
-- **Flask / FastAPI** (for API development)
-- **WebSockets / Telegram Bot API** (for real-time communication)
+## Technologies
+- **Backend**: Flask, Python
+- **AI/ML**: Groq LLM (with OpenAI fallback)
+- **Text-to-Speech**: ElevenLabs
+- **News Sources**: Google SERP API, Web Scraping
+- **Frontend**: HTML, CSS, JavaScript
 
-## Installation
-### Prerequisites
-Ensure you have Python installed. You can download it from [python.org](https://www.python.org/downloads/).
+## Environment Variables Required
+- `GROQ_API_KEY`: Your Groq API key
+- `OPENAI_API_KEY`: Your OpenAI API key (for fallback)
+- `ELEVENLABS_API_KEY`: Your ElevenLabs API key
+- `GOOGLE_NEWS_API_KEY`: Your Google SERP API key
 
-### Steps
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/dhruvldrp9/News_Agent.git
-   cd news-agent
-   ```
-2. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-3. Set up API keys in `.env` file:
-   ```
-   GOOGLE_SERP_API_KEY=your_api_key_here
-   OPENAI_API_KEY=your_api_key_here
-   ```
-4. Run the News Agent:
-   ```bash
-   python news_agent.py
-   ```
+## Setup Instructions
+
+### On Replit
+1. Fork this project on Replit
+2. Set up environment variables in the Secrets tool:
+   - Add `GROQ_API_KEY`, `OPENAI_API_KEY`, `ELEVENLABS_API_KEY`, and `GOOGLE_NEWS_API_KEY`
+3. Click Run to start the application locally
+
+### Deployment on Replit
+1. Click the Deploy button in the top right corner
+2. Select "Deploy to Replit"
+3. Configure your deployment:
+   - **Machine configuration**: Choose based on your needs (1vCPU/2GB recommended)
+   - **Run command**: `python app.py`
+   - **Environment variables**: Make sure they're copied from your Secrets
+4. Click Deploy
 
 ## Usage
-- Start the News Agent, and it will begin fetching and summarizing the latest news.
-- Users can interact with the bot to get personalized news updates.
-- Alerts and summaries will be provided based on user preferences.
+1. Type your news query in the input box or click the microphone button to speak
+2. Nova will search for and summarize the latest news on that topic
+3. You can listen to the response by clicking the play button
+4. Start a new chat using the "+" button in the header
 
-## Contribution
-Contributions are welcome! Feel free to submit issues, feature requests, or pull requests.
+## Customization
+- Modify the UI theme by editing `static/css/styles.css`
+- Adjust model parameters in `models/Communication_OpenAI.py`
+- Change language settings through the settings menu
 
 ## License
 This project is licensed under the MIT License.
 
-## Contact
-For inquiries, reach out at [your email or GitHub profile].
-
+## Contributors
+- [Your Name/Username]

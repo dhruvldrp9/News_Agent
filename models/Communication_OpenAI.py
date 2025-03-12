@@ -1,6 +1,7 @@
 import os
 import time
 from openai import OpenAI
+from groq import Groq
 from serpapi import GoogleSearch
 from models.WebScrapper1 import WebScraper
 from models.summarizer import TextSummarizer
@@ -8,27 +9,33 @@ from elevenlabs import ElevenLabs
 
 
 class GPTConversationSystem:
+
     def __init__(self, openai_api_key: str):
         """Initialize the conversation system with required models and settings."""
-        # Initialize OpenAI client
-        self.client = OpenAI(api_key=openai_api_key)
+        # Initialize OpenAI client for fallback
+        self.client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+        # Initialize Groq client as primary LLM
+        self.groq_client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+
         self.scrapper = WebScraper()
         self.summarizer = TextSummarizer(10)
 
-        self.eleven_client = ElevenLabs(api_key=os.getenv("ELEVENLABS_API_KEY"))
-        
+        self.eleven_client = ElevenLabs(
+            api_key=os.getenv("ELEVENLABS_API_KEY"))
+
         # Audio recording settings
         self.samplerate = 44100
         self.channels = 1
 
         self.agent = "News"
         self.conversation_history = None
-        
+
         # Conversation history with carefully crafted system prompt
-        self.general_agent = [
-            {
-                "role": "system",
-                "content": """You are an advanced AI assistant engaging in a natural spoken conversation. Your key characteristics are:
+        self.general_agent = [{
+            "role":
+            "system",
+            "content":
+            """You are an advanced AI assistant engaging in a natural spoken conversation. Your key characteristics are:
 
                     1. Conversational Style:
                     - Speak naturally and warmly, as if in a face-to-face conversation
@@ -53,13 +60,13 @@ class GPTConversationSystem:
                     - Don't repeat the user's words verbatim
                     - Keep responses informative but brief
                     - Express opinions when appropriate while respecting different viewpoints"""
-            }
-        ]
+        }]
 
-        self.news_agent = [
-            {
-                "role": "system", 
-                "content": """You are an AI News Companion designed to discuss current events in a natural conversational manner. Your communication must be TTS friendly.
+        self.news_agent = [{
+            "role":
+            "system",
+            "content":
+            """You are an AI News Companion designed to discuss current events in a natural conversational manner. Your communication must be TTS friendly.
 
                 Core Communication Guidelines:
                 1 Speak in clear natural language
@@ -107,36 +114,37 @@ class GPTConversationSystem:
                 • Check user query that is related to news.
                 • Inform user to only ask about news.
                 """
-            }
-        ]
+        }]
         if self.agent == "News":
             self.conversation_history = self.news_agent
         else:
             self.conversation_history = self.general_agent
 
-        
         # Track conversation duration for context management
         self.conversation_start = time.time()
         self.last_context_refresh = time.time()
         self.context_refresh_interval = 600  # Refresh context every 10 minutes
-        
+
         # Create audio directory if it doesn't exist
         self.audio_dir = "audio_recordings"
         os.makedirs(self.audio_dir, exist_ok=True)
 
-    def get_global_news(self,user_input):
+    def get_global_news(self, user_input):
         params = {
-        "engine": "google",
-        "q": user_input,
-        "gl": "in",
-        "hl": "en",
-        "api_key": os.getenv("GOOGLE_NEWS_API_KEY")
+            "engine": "google",
+            "q": user_input,
+            "gl": "in",
+            "hl": "en",
+            "api_key": os.getenv("GOOGLE_NEWS_API_KEY")
         }
 
         search = GoogleSearch(params)
         results = search.get_dict()
         result_list = ''
-        filter_keywords = ["thehindu.com", "hindustantimes.com", "ndtv.com", "aajtak.in", "indiatoday.in"]
+        filter_keywords = [
+            "thehindu.com", "hindustantimes.com", "ndtv.com", "aajtak.in",
+            "indiatoday.in"
+        ]
         for i in results['organic_results']:
             try:
                 if any(keyword in i['link'] for keyword in filter_keywords):
@@ -145,12 +153,11 @@ class GPTConversationSystem:
             except Exception as e:
                 continue
 
-
         summarized_text = self.summarizer.summarize(result_list, 512, 'word')
         return summarized_text
 
     def get_gpt_response(self, user_input: str) -> str:
-        """Get response from GPT model"""   
+        """Get response from Groq model"""
         try:
             # Check if we need to refresh context
             current_time = time.time()
@@ -163,7 +170,6 @@ class GPTConversationSystem:
                 self.last_context_refresh = current_time
 
             if self.agent == "News":
-
                 user_input = f"""Here is what found on google search news: {self.get_global_news(user_input)}.
                 You need to answer users query with your defined role and this available data only. if don't found any data answer that question if you have proper knowledge, else ask user to provide proper question.
 
@@ -171,41 +177,53 @@ class GPTConversationSystem:
 
                 answer user query.
                 """
-            
+
             # Add user message to conversation
             self.conversation_history.append({
                 "role": "user",
                 "content": user_input
             })
 
-            # print(conversation_history)
-            
-            # Get response from GPT
-            response = self.client.chat.completions.create(
-                model="gpt-3.5-turbo",
-                messages=self.conversation_history,
-                temperature=0.7,
-                max_tokens=512,
-                top_p=0.9,
-                frequency_penalty=0.5,
-                presence_penalty=0.5
-            )
-            
-            # Extract the response text correctly
-            assistant_response = response.choices[0].message.content.strip()
-            
+            # Get response from Groq
+            try:
+                completion = self.groq_client.chat.completions.create(
+                    model="deepseek-r1-distill-llama-70b",
+                    messages=self.conversation_history,
+                    temperature=0.6,
+                    max_completion_tokens=512,
+                    top_p=0.95,
+                    stream=False)
+
+                assistant_response = completion.choices[
+                    0].message.content.strip()
+            except Exception as groq_error:
+                print(
+                    f"Groq API error: {str(groq_error)}. Falling back to OpenAI."
+                )
+                # Fallback to OpenAI if Groq fails
+                response = self.client.chat.completions.create(
+                    model="gpt-3.5-turbo",
+                    messages=self.conversation_history,
+                    temperature=0.7,
+                    max_tokens=512,
+                    top_p=0.9,
+                    frequency_penalty=0.5,
+                    presence_penalty=0.5)
+                assistant_response = response.choices[0].message.content.strip(
+                )
+
             # Add assistant's response to history
             self.conversation_history.append({
                 "role": "assistant",
                 "content": assistant_response
             })
-            
+
             return assistant_response
-            
+
         except Exception as e:
-            print(f"Error getting GPT response: {str(e)}")
+            print(f"Error getting LLM response: {str(e)}")
             return "I apologize, but I encountered an error. Could you please repeat that?"
-        
+
     def text_to_speech_stream(self, text: str):
         """Convert text to speech and return audio stream"""
         try:
@@ -213,8 +231,7 @@ class GPTConversationSystem:
                 voice_id="mfMM3ijQgz8QtMeKifko",
                 output_format="mp3_44100_128",
                 text=text,
-                model_id="eleven_flash_v2_5"
-            )
+                model_id="eleven_flash_v2_5")
             return audio_stream
         except Exception as e:
             print(f"Error in text to speech conversion: {str(e)}")
