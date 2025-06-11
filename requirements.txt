@@ -11,3 +11,4 @@ openai==1.59.7
 requests==2.32.3
 serpapi==0.1.5
 spacy
+dotenv

@@ -5,6 +5,9 @@ from serpapi import GoogleSearch
 from models.WebScrapper1 import WebScraper
 from models.summarizer import TextSummarizer
 from elevenlabs import ElevenLabs
+from dotenv import load_dotenv
+
+load_dotenv()  # <-- This line loads .env variables into the environment
 
 
 class GPTConversationSystem:

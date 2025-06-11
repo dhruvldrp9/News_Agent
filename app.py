@@ -1,6 +1,10 @@
-efrom flask import Flask, render_template, request, jsonify, Response
+from flask import Flask, render_template, request, jsonify, Response
 from models.chat_model import generate_response, text_to_speech_stream
 import uuid
+from dotenv import load_dotenv
+
+load_dotenv()  # <-- This line loads .env variables into the environment
+
 
 app = Flask(__name__)
 
