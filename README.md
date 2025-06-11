@@ -45,7 +45,7 @@ Ensure you have Python installed. You can download it from [python.org](https://
    ```
 4. Run the News Agent:
    ```bash
-   python news_agent.py
+   python app.py
    ```
 
 ## Usage
