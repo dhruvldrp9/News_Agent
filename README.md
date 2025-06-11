@@ -44,15 +44,11 @@ News Agent is an intelligent AI-powered news assistant that provides real-time n
 
 3. Set up environment variables:
    ```bash
-<<<<<<< HEAD
-   python app.py
-=======
    # Copy the example environment file
    cp env.example .env
    
    # Edit the .env file with your API keys
    nano .env  # or use any text editor
->>>>>>> 1a263e9 (Updated News Agent)
    ```
 
 4. Run the application:
