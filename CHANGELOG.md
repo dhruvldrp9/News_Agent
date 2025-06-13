@@ -6,6 +6,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2025-06-14
+
+### Added
+- Production deployment on newsagent.dhruv.at
+- Enhanced SEO optimization with structured data
+- Progressive Web App (PWA) support with web manifest
+- Improved meta tags for social media sharing
+- Multiple favicon formats for better browser support
+- Updated sitemap with current domain
+- Enhanced security configurations for production
+
+### Changed
+- Migrated from Groq to OpenAI GPT-3.5 Turbo for better reliability
+- Updated all domain references to newsagent.dhruv.at
+- Improved responsive design and accessibility
+- Enhanced production configuration settings
+
 ## [1.0.0] - 2024-06-13
 
 ### Added

@@ -1,25 +1,31 @@
-# Updated chat endpoint to handle news region parameter
+
 from flask import Flask, render_template, request, jsonify, redirect, url_for, session
 import os
 import json
 import uuid
 from functools import wraps
 from datetime import datetime, timedelta
-from openai import OpenAI
 import time
 from elevenlabs import ElevenLabs
 from models.chat_model import generate_response
 import logging
+import hashlib
+import secrets
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
-app.secret_key = os.urandom(24)
-app.config['SESSION_COOKIE_SECURE'] = False  # Allow over HTTP for development
+app.secret_key = os.environ.get('SECRET_KEY', secrets.token_hex(32))
+app.config['SESSION_COOKIE_SECURE'] = os.environ.get('FLASK_ENV') == 'production'
 app.config['SESSION_COOKIE_HTTPONLY'] = True
-app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+app.config['SESSION_COOKIE_SAMESITE'] = 'Strict'
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=24)
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max upload
+app.config['SERVER_NAME'] = os.environ.get('DOMAIN', None)
 
 # Initialize API clients
+from openai import OpenAI
 client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
-eleven_client = ElevenLabs(api_key=os.getenv('ELEVEN_LABS_API_KEY'))
+eleven_client = ElevenLabs(api_key=os.getenv('ELEVENLABS_API_KEY'))
 
 # Store conversation sessions
 conversation_sessions = {}
@@ -28,6 +34,8 @@ conversation_sessions = {}
 logging.basicConfig(level=logging.INFO)
 
 CHAT_HISTORIES_FILE = 'data/chat_histories.json'
+USER_USAGE_FILE = 'data/user_usage.json'
+MAX_QUERIES_PER_USER = 10
 
 def login_required(f):
     @wraps(f)
@@ -85,9 +93,46 @@ def save_chat_histories(histories):
     except Exception as e:
         logging.error(f'Error saving chat histories: {e}')
 
+def load_user_usage():
+    try:
+        if os.path.exists(USER_USAGE_FILE):
+            with open(USER_USAGE_FILE, 'r') as f:
+                return json.load(f)
+        return {}
+    except Exception as e:
+        logging.error(f'Error loading user usage: {e}')
+        return {}
+
+def save_user_usage(usage_data):
+    try:
+        os.makedirs('data', exist_ok=True)
+        with open(USER_USAGE_FILE, 'w') as f:
+            json.dump(usage_data, f, indent=2)
+    except Exception as e:
+        logging.error(f'Error saving user usage: {e}')
+
+def check_user_query_limit(user_id):
+    usage_data = load_user_usage()
+    user_queries = usage_data.get(user_id, 0)
+    return user_queries < MAX_QUERIES_PER_USER
+
+def increment_user_queries(user_id):
+    usage_data = load_user_usage()
+    usage_data[user_id] = usage_data.get(user_id, 0) + 1
+    save_user_usage(usage_data)
+    return usage_data[user_id]
+
 @app.route('/')
 def index():
     return redirect(url_for('login'))
+
+@app.route('/sitemap.xml')
+def sitemap():
+    return app.send_static_file('sitemap.xml')
+
+@app.route('/robots.txt')
+def robots():
+    return app.send_static_file('robots.txt')
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
@@ -109,7 +154,9 @@ def signup():
                 'id': str(uuid.uuid4()),
                 'name': name,
                 'email': email,
-                'password': password
+                'password': generate_password_hash(password),
+                'created_at': datetime.now().isoformat(),
+                'queries_used': 0
             }
 
             users.append(new_user)
@@ -138,9 +185,17 @@ def login():
             users = load_users()
             user = None
             for u in users:
-                if isinstance(u, dict) and u.get('email') == email and u.get('password') == password:
-                    user = u
-                    break
+                if isinstance(u, dict) and u.get('email') == email:
+                    # Handle both old unhashed passwords and new hashed passwords
+                    if u.get('password') == password:  # Old unhashed password
+                        # Update to hashed password
+                        u['password'] = generate_password_hash(password)
+                        save_users(users)
+                        user = u
+                        break
+                    elif check_password_hash(u.get('password', ''), password):  # New hashed password
+                        user = u
+                        break
 
             if not user:
                 return jsonify({'error': 'Invalid email or password'}), 401
@@ -205,6 +260,13 @@ def chat():
             app.logger.error("No user_id found in session")
             return jsonify({'error': 'User not authenticated'}), 401
 
+        # Check query limit
+        if not check_user_query_limit(user_id):
+            return jsonify({
+                'error': 'Query limit exceeded. You have reached the maximum of 10 queries. Please contact dhruv.ldrp9@gmail.com to continue using the service.',
+                'limit_exceeded': True
+            }), 429
+
         # Load chat histories
         chat_histories = load_chat_histories()
 
@@ -264,9 +326,14 @@ def chat():
 
             save_chat_histories(chat_histories)
 
+            # Increment user query count
+            queries_used = increment_user_queries(user_id)
+            remaining_queries = MAX_QUERIES_PER_USER - queries_used
+
             return jsonify({
                 'response': ai_response,
-                'session_id': session_id
+                'session_id': session_id,
+                'queries_remaining': remaining_queries
             })
         except Exception as e:
             app.logger.error(f"Error generating response: {str(e)}")
@@ -329,6 +396,87 @@ def new_chat():
         app.logger.error(f"Error creating new chat: {str(e)}")
         return jsonify({'error': 'Failed to create new chat'}), 500
 
+@app.route('/chat/clear-all', methods=['DELETE'])
+@login_required
+def clear_all_chats():
+    try:
+        user_id = session.get('user_id')
+        if not user_id:
+            return jsonify({'error': 'User not authenticated'}), 401
+
+        # Load chat histories
+        chat_histories = load_chat_histories()
+        
+        # Clear all chats for this user
+        if user_id in chat_histories:
+            # Also clear from conversation_sessions
+            user_sessions = [chat['session_id'] for chat in chat_histories[user_id]]
+            for session_id in user_sessions:
+                if session_id in conversation_sessions:
+                    del conversation_sessions[session_id]
+            
+            # Clear user's chat history
+            chat_histories[user_id] = []
+            save_chat_histories(chat_histories)
+
+        app.logger.info(f"Cleared all chat history for user {user_id}")
+
+        return jsonify({
+            'success': True,
+            'message': 'All chat history cleared successfully'
+        })
+    except Exception as e:
+        app.logger.error(f"Error clearing all chats: {str(e)}")
+        return jsonify({'error': 'Failed to clear chat history'}), 500
+
+@app.route('/chat/delete', methods=['DELETE'])
+@login_required
+def delete_specific_chat():
+    try:
+        user_id = session.get('user_id')
+        if not user_id:
+            return jsonify({'error': 'User not authenticated'}), 401
+
+        data = request.get_json()
+        session_id = data.get('session_id')
+        
+        if not session_id:
+            return jsonify({'error': 'Session ID is required'}), 400
+
+        # Load chat histories
+        chat_histories = load_chat_histories()
+        
+        if user_id in chat_histories:
+            # Find and remove the specific chat session
+            original_length = len(chat_histories[user_id])
+            chat_histories[user_id] = [
+                chat for chat in chat_histories[user_id] 
+                if chat['session_id'] != session_id
+            ]
+            
+            if len(chat_histories[user_id]) < original_length:
+                # Save updated histories
+                save_chat_histories(chat_histories)
+                
+                # Also remove from conversation_sessions
+                if session_id in conversation_sessions:
+                    del conversation_sessions[session_id]
+                
+                app.logger.info(f"Deleted chat session {session_id} for user {user_id}")
+                
+                return jsonify({
+                    'success': True,
+                    'message': 'Chat deleted successfully'
+                })
+            else:
+                return jsonify({'error': 'Chat not found'}), 404
+        else:
+            return jsonify({'error': 'No chat history found'}), 404
+
+    except Exception as e:
+        app.logger.error(f"Error deleting specific chat: {str(e)}")
+        return jsonify({'error': 'Failed to delete chat'}), 500
+
 @app.route('/speak', methods=['POST'])
 @login_required
 def speak():
@@ -378,4 +526,6 @@ def speak():
         return jsonify({'error': 'Error generating audio'}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    debug_mode = os.environ.get('FLASK_DEBUG', 'False').lower() == 'true'
+    port = int(os.environ.get('PORT', 5001))
+    app.run(host='0.0.0.0', port=port, debug=debug_mode)

@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const newChatBtn = document.getElementById('newChatBtn');
     const chatHistory = document.getElementById('chatHistory');
     const micButton = document.getElementById('micButton');
+    const clearAllChatsBtn = document.getElementById('clearAllChatsBtn');
 
     let currentSessionId = localStorage.getItem('currentSessionId') || '';
 
@@ -65,6 +66,133 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // Clear All Chats button functionality
+    if (clearAllChatsBtn) {
+        clearAllChatsBtn.addEventListener('click', function() {
+            if (confirm('Are you sure you want to delete all chat history? This action cannot be undone.')) {
+                // Add visual feedback
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                }, 150);
+                clearAllChats();
+            }
+        });
+    }
+
+    function clearAllChats() {
+        showLoadingState();
+
+        fetch('/chat/clear-all', {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            credentials: 'same-origin'
+        })
+        .then(response => {
+            if (!response.ok) {
+                if (response.status === 401) {
+                    window.location.href = '/login';
+                    return;
+                }
+                throw new Error('Failed to clear chat history');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data && data.success) {
+                // Clear current session
+                currentSessionId = '';
+                localStorage.removeItem('currentSessionId');
+
+                // Clear the chat messages
+                chatMessages.innerHTML = '';
+
+                // Show welcome message
+                showWelcomeMessage();
+
+                // Reload chat history to update sidebar
+                loadChatHistory();
+
+                showSuccessMessage('All chat history has been cleared successfully.');
+            }
+        })
+        .catch(error => {
+            console.error('Error clearing chat history:', error);
+            showErrorMessage('Failed to clear chat history. Please try again.');
+        })
+        .finally(() => {
+            hideLoadingState();
+        });
+    }
+
+    function deleteSpecificChat(sessionId) {
+        fetch('/chat/delete', {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            credentials: 'same-origin',
+            body: JSON.stringify({ session_id: sessionId })
+        })
+        .then(response => {
+            if (!response.ok) {
+                if (response.status === 401) {
+                    window.location.href = '/login';
+                    return;
+                }
+                throw new Error('Failed to delete chat');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data && data.success) {
+                // If we deleted the current session, create a new one
+                if (sessionId === currentSessionId) {
+                    createNewChat();
+                } else {
+                    // Just reload the chat history
+                    loadChatHistory();
+                }
+
+                showSuccessMessage('Chat deleted successfully.');
+            }
+        })
+        .catch(error => {
+            console.error('Error deleting chat:', error);
+            showErrorMessage('Failed to delete chat. Please try again.');
+        });
+    }
+
+    function showSuccessMessage(message) {
+        const successDiv = document.createElement('div');
+        successDiv.className = 'message success-message animate-slide-in';
+        successDiv.innerHTML = `
+            <div class="message-content">
+                <div class="message-header">
+                    <i class="fas fa-check-circle"></i>
+                    <span class="message-sender">System</span>
+                    <span class="message-time">${new Date().toLocaleTimeString()}</span>
+                </div>
+                <div class="message-text">${message}</div>
+            </div>
+        `;
+        chatMessages.appendChild(successDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+
+        // Auto-remove success message after 3 seconds
+        setTimeout(() => {
+            if (successDiv.parentNode) {
+                successDiv.remove();
+            }
+        }, 3000);
+    }
+
     function createNewChat() {
         showLoadingState();
 
@@ -91,16 +219,16 @@ document.addEventListener('DOMContentLoaded', function() {
             if (data && data.session_id) {
                 currentSessionId = data.session_id;
                 localStorage.setItem('currentSessionId', currentSessionId);
-                
+
                 // Clear the chat messages completely
                 chatMessages.innerHTML = '';
-                
+
                 // Show welcome message for the new chat
                 showWelcomeMessage();
-                
+
                 // Reload chat history to update sidebar
                 loadChatHistory();
-                
+
                 // Scroll to bottom
                 setTimeout(() => scrollToBottom(), 100);
             }
@@ -520,18 +648,26 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 return `
                     <div class="chat-history-item ${isActive ? 'active' : ''} animate-slide-in" data-session-id="${chat.session_id}">
-                        <div class="chat-history-preview">${preview.substring(0, 60)}${preview.length > 60 ? '...' : ''}</div>
+                        <div class="chat-history-preview">${preview.substring(0, 50)}${preview.length > 50 ? '...' : ''}</div>
                         <div class="chat-history-date">
                             <i class="fas fa-clock"></i>
                             ${date} • ${time}
                         </div>
+                        <button class="delete-chat-btn" data-session-id="${chat.session_id}" title="Delete this chat">
+                            <i class="fas fa-trash"></i>
+                        </button>
                     </div>
                 `;
             }).join('');
 
-            // Add click listeners with enhanced feedback
+            // Add click listeners for chat items
             document.querySelectorAll('.chat-history-item').forEach(item => {
-                item.addEventListener('click', function () {
+                item.addEventListener('click', function (e) {
+                    // Don't trigger if delete button was clicked
+                    if (e.target.closest('.delete-chat-btn')) {
+                        return;
+                    }
+
                     // Visual feedback
                     this.style.transform = 'scale(0.98)';
                     setTimeout(() => {
@@ -540,6 +676,26 @@ document.addEventListener('DOMContentLoaded', function() {
 
                     const sessionId = this.dataset.sessionId;
                     loadChatSession(sessionId);
+                });
+            });
+
+            // Add click listeners for delete buttons
+            document.querySelectorAll('.delete-chat-btn').forEach(btn => {
+                btn.addEventListener('click', function (e) {
+                    e.stopPropagation(); // Prevent chat item click
+
+                    const sessionId = this.dataset.sessionId;
+                    const chatItem = this.closest('.chat-history-item');
+                    const preview = chatItem.querySelector('.chat-history-preview').textContent;
+
+                    if (confirm(`Are you sure you want to delete this chat?\n\n"${preview}"\n\nThis action cannot be undone.`)) {
+                        // Add visual feedback
+                        this.style.transform = 'scale(0.9)';
+                        setTimeout(() => {
+                            this.style.transform = 'scale(1)';
+                        }, 150);
+                        deleteSpecificChat(sessionId);
+                    }
                 });
             });
         } else {
@@ -613,5 +769,13 @@ document.addEventListener('DOMContentLoaded', function() {
         // Restore saved region or default to global
         const savedRegion = localStorage.getItem('newsRegion') || 'global';
         newsRegionSelect.value = savedRegion;
+    }
+
+    // Function to update the displayed number of remaining queries
+    function updateQueriesRemaining(queriesRemaining) {
+        const queriesRemainingElement = document.getElementById('queriesRemaining');
+        if (queriesRemainingElement) {
+            queriesRemainingElement.textContent = queriesRemaining;
+        }
     }
 });

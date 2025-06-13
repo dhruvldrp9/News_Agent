@@ -1,3 +1,4 @@
+
 beautifulsoup4==4.12.3
 bs4==0.0.2
 certifi==2024.12.14
@@ -7,8 +8,10 @@ en_core_web_sm @ https://github.com/explosion/spacy-models/releases/download/en_
 Flask==3.1.0
 google_search_results==2.4.2
 nltk==3.9.1
-openai==1.59.7
+groq==0.4.2
 requests==2.32.3
 serpapi==0.1.5
 spacy
-dotenv
+python-dotenv
+openai
+werkzeug

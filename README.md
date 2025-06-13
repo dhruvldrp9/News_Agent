@@ -1,14 +1,19 @@
-
 # News Agent - AI-Powered News Assistant
+
+[![Live Demo](https://img.shields.io/badge/Live-Demo-brightgreen?style=for-the-badge&logo=vercel)](https://newsagent.dhruv.at)
+[![GitHub](https://img.shields.io/badge/GitHub-Repository-blue?style=for-the-badge&logo=github)](https://github.com/dhruvldrp9/News_Agent)
+[![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](./LICENSE)
 
 ![News Agent](https://github.com/user-attachments/assets/59877a36-1c0d-4deb-b49b-2d968e5c663c)
 
 ## 🌟 Overview
-News Agent is an intelligent AI-powered news assistant that provides real-time news updates and summaries. It combines the power of Google Search API, OpenAI's GPT model, and advanced text processing to deliver accurate and concise news information through both text and voice interfaces.
+News Agent is an intelligent AI-powered news assistant that provides real-time news updates and summaries. It combines the power of Google Search API, OpenAI's GPT models, and advanced text processing to deliver accurate and concise news information through both text and voice interfaces.
+
+🌐 **Live Demo**: [https://newsagent.dhruv.at](https://newsagent.dhruv.at)
 
 ## ✨ Features
 - **🔄 Real-Time News Updates**: Fetches latest news using Google Search API
-- **🧠 AI-Powered Summarization**: Generates concise summaries using OpenAI GPT
+- **🧠 AI-Powered Summarization**: Generates concise summaries using Groq's Llama models
 - **🌍 Regional News Support**: Switch between Global and India-specific news
 - **💬 Interactive Chat Interface**: User-friendly web interface for news interaction
 - **🎤 Voice Assistant**: Complete voice interaction with speech recognition and synthesis
@@ -20,11 +25,12 @@ News Agent is an intelligent AI-powered news assistant that provides real-time n
 
 ## 🛠️ Technologies Used
 - **Backend**: Python 3.12, Flask
-- **AI/ML**: OpenAI GPT-3.5, SpaCy, NLTK
+- **AI/ML**: OpenAI GPT-3.5 Turbo, SpaCy, NLTK
 - **APIs**: Google Search API (SerpAPI), ElevenLabs Text-to-Speech
 - **Frontend**: HTML5, CSS3, JavaScript (ES6+)
 - **Web Scraping**: BeautifulSoup4, Requests
 - **Data Processing**: Pandas, NumPy
+- **Deployment**: Replit (Production)
 
 ## 📋 Prerequisites
 Before you begin, ensure you have the following:
@@ -60,9 +66,13 @@ cp env.example .env
 
 Edit the `.env` file with your API keys:
 ```env
+SECRET_KEY=your_secret_key_here
+FLASK_ENV=production
 OPENAI_API_KEY=your_openai_api_key_here
 GOOGLE_NEWS_API_KEY=your_serpapi_key_here
 ELEVENLABS_API_KEY=your_elevenlabs_api_key_here
+DOMAIN=newsagent.dhruv.at
+PORT=5000
 ```
 
 ### 5. Create Required Directories
@@ -91,56 +101,51 @@ mkdir -p data static/audio
 3. Navigate to your profile settings
 4. Copy your API key to your `.env` file
 
-## 🏃‍♂️ Running the Application
+## 🚀 Running the Application
 
-### Development Server
+### 1. Start the Server
 ```bash
 python app.py
 ```
 
-The application will be available at `http://localhost:5000`
+### 2. Access the Application
+Open your browser and navigate to:
+```
+http://localhost:5000
+```
 
-### Production Deployment (Replit)
-1. Fork this repository to your GitHub account
-2. Import the repository into Replit
-3. Set up your environment variables in Replit Secrets
-4. Click the "Run" button in Replit
-5. Deploy using Replit's deployment feature
+### 3. Create Account
+- Sign up with your email and password
+- Log in to access the news assistant
 
-## 📖 Usage
+## 🎯 Usage
 
-### Getting Started
-1. Open the application in your browser
-2. Sign up for a new account or log in
-3. Start asking news-related questions in the chat interface
-
-### Chat Interface
-- Type your news queries in the chat input
-- Select between "Global News" or "India News" from the dropdown
-- Use the microphone button for voice input
-- View your chat history in the sidebar
+### Text Chat
+1. Navigate to the main chat interface
+2. Select news region (Global/India)
+3. Ask questions about current news
+4. Get AI-powered summaries and insights
 
 ### Voice Assistant
-- Click "Voice Assistant" in the header
-- Click the microphone button to start voice interaction
-- Speak your question clearly
-- The AI will respond with both text and voice
+1. Click on "Voice Assistant" in the header
+2. Tap the microphone button to start
+3. Speak your news query
+4. Listen to AI-generated audio responses
 
-### Example Queries
-- "What's happening in the world today?"
-- "Tell me about the latest technology news"
-- "What are the recent developments in India?"
-- "Give me updates on climate change"
+## 🏗️ Architecture
 
-## 🔧 Configuration
+### Core Components
+- **Flask Backend**: Handles routing, authentication, and API integration
+- **Groq Integration**: Powers AI responses using Llama-3.1-8b-instant model
+- **News Scraping**: Fetches and processes news from multiple sources
+- **Text Processing**: Summarizes content using NLTK
+- **Voice Features**: Speech recognition and text-to-speech synthesis
 
-### News Regions
-- **Global News**: Sources news from international outlets
-- **India News**: Focuses on Indian news sources and regional content
-
-### Voice Settings
-- The application uses ElevenLabs for high-quality voice synthesis
-- Voice model: `eleven_flash_v2_5`
+### AI Model Configuration
+- **Model**: `gpt-3.5-turbo`
+- **Temperature**: 0.7 for balanced creativity
+- **Max tokens**: 1000 for comprehensive responses
+- **Voice model**: `eleven_flash_v2_5`
 - Audio format: MP3 (44.1kHz, 128kbps)
 
 ## 📁 Project Structure
@@ -197,7 +202,7 @@ python app.py
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 🙏 Acknowledgments
-- OpenAI for providing the GPT API
+- Groq for providing fast AI inference
 - ElevenLabs for text-to-speech capabilities
 - SerpAPI for Google Search integration
 - The open-source community for various libraries used
@@ -208,8 +213,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **GitHub**: [@dhruvldrp9](https://github.com/dhruvldrp9)
 
 ## 🌟 Star this Repository
-If you find this project useful, please consider giving it a star! It helps others discover the project and motivates continued development.
+If you find this project helpful, please give it a star! ⭐
 
 ---
 
-**Made with ❤️ by [Dhruv Patel](https://github.com/dhruvldrp9)**
+**Note**: This project uses Groq's fast AI models for enhanced performance and cost-effectiveness compared to traditional OpenAI models.

@@ -1,16 +1,16 @@
+
 import random
 from models.Communication_OpenAI import GPTConversationSystem
 import os
 from dotenv import load_dotenv
 
-load_dotenv()  # <-- This line loads .env variables into the environment
+load_dotenv()
 
 communication_agent = GPTConversationSystem(os.getenv('OPENAI_API_KEY'))
 
 def generate_response(conversation_history, news_region):
     """
     Generate a conversational response using the conversation history and news region.
-    In a real application, this would be replaced with an AI model.
     """
     last_user_message = conversation_history[-1]['content'] if conversation_history else ''
 

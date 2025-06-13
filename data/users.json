@@ -4,7 +4,7 @@
             "id": "2c1264a8-1505-417b-964f-3dbfc29198da",
             "name": "Gabbar",
             "email": "abc@gmail.com",
-            "password": "abcgmail"
+            "password": "scrypt:32768:8:1$Aj3Q2qHwku6tU9Lc$93cb4329aefc49a988af70a9db4378978320d5591b136c8154bc633cc7ff19ac5ff4599f50e23862e307bff6dc5f7834a6fcb503907b22a3e3162778c806789d"
         }
     ]
 }

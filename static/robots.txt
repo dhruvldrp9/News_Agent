@@ -1,0 +1,11 @@
+
+User-agent: *
+Allow: /
+Allow: /login
+Allow: /signup
+Disallow: /chat
+Disallow: /voice
+Disallow: /api/
+Disallow: /static/audio/
+
+Sitemap: https://newsagent.dhruv.at/sitemap.xml

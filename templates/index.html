@@ -1,10 +1,77 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>News Agent - AI News Assistant</title>
+    <title>News Agent - AI-Powered News Assistant | Real-Time News & Voice AI</title>
+    <meta name="description" content="News Agent provides real-time news updates, AI-powered summaries, and voice interaction. Get instant access to global and regional news with intelligent analysis powered by OpenAI.">
+    <meta name="keywords" content="news agent, AI news assistant, real-time news, voice AI, news summaries, OpenAI news, intelligent news analysis, voice news assistant, AI journalism, automated news">
+    <meta name="author" content="Dhruv Patel">
+    <meta name="generator" content="Flask Python Web Application">
+    <meta name="application-name" content="News Agent">
+
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="News Agent - AI-Powered News Assistant">
+    <meta property="og:description" content="Experience the future of news consumption with AI-powered summaries, voice interaction, and real-time updates from global sources.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://newsagent.dhruv.at">
+    <meta property="og:image" content="https://newsagent.dhruv.at/static/images/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:site_name" content="News Agent">
+    <meta property="og:locale" content="en_US">
+
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="News Agent - AI-Powered News Assistant">
+    <meta name="twitter:description" content="Get intelligent news summaries and voice interaction powered by AI. Real-time updates from global sources.">
+    <meta name="twitter:image" content="https://newsagent.dhruv.at/static/images/twitter-card.png">
+    <meta name="twitter:creator" content="@dhruvldrp9">
+    <meta name="twitter:site" content="@newsagent">
+
+    <!-- Additional SEO Meta Tags -->
+    <meta name="robots" content="index, follow, max-image-preview:large">
+    <meta name="googlebot" content="index, follow">
+    <meta name="language" content="English">
+    <meta name="revisit-after" content="1 day">
+    <meta name="rating" content="general">
+    <meta name="geo.region" content="AT">
+    <meta name="geo.country" content="Austria">
+    <link rel="canonical" href="https://newsagent.dhruv.at/chat">
+
+    <!-- Structured Data for Rich Snippets -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "News Agent",
+        "description": "AI-powered news assistant with real-time updates and voice interaction",
+        "url": "https://newsagent.dhruv.at",
+        "applicationCategory": "NewsApplication",
+        "operatingSystem": "Web Browser",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+        },
+        "author": {
+            "@type": "Person",
+            "name": "Dhruv Patel",
+            "email": "dhruv.ldrp9@gmail.com"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "News Agent",
+            "url": "https://newsagent.dhruv.at"
+        }
+    }
+    </script>
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='images/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='images/favicon-16x16.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='images/apple-touch-icon.png') }}">
+    <link rel="manifest" href="{{ url_for('static', filename='site.webmanifest') }}">
+    <meta name="theme-color" content="#0099ff">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -24,6 +91,10 @@
                 <button id="newChatBtn" class="btn btn-primary animate-pulse-glow" title="Start New Chat">
                     <i class="fas fa-plus"></i>
                     New Chat
+                </button>
+                <button id="clearAllChatsBtn" class="btn btn-danger-outline" title="Clear All Chats">
+                    <i class="fas fa-trash-alt"></i>
+                    Clear All
                 </button>
             </div>
 

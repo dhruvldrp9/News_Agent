@@ -29,7 +29,7 @@ By participating in this project, you agree to maintain a respectful and inclusi
 
 1. Clone your fork:
    ```bash
-   git clone https://github.com/dhruvldrp9/News_Agent.git
+   git clone https://github.com/dhruv-ldrp9/News_Agent.git
    cd News_Agent
    ```
 
