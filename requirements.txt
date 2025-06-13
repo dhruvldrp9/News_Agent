@@ -8,3 +8,4 @@ google_search_results==2.4.2
 nltk==3.9.1
 requests==2.32.3
 serpapi==0.1.5
+openai==1.59.7
