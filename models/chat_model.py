@@ -1,6 +1,9 @@
 import random
 from models.Communication_OpenAI import GPTConversationSystem
 import os
+from dotenv import load_dotenv
+
+load_dotenv()  # <-- This line loads .env variables into the environment
 
 communication_agent = GPTConversationSystem(os.getenv('OPENAI_API_KEY'))
 

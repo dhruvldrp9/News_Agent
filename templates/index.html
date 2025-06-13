@@ -3,74 +3,102 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nova AI Assistant</title>
+    <title>News Agent - Your AI News Assistant</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/design-system.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
-    <div class="container">
+    <div class="app-container">
+        <!-- Header -->
         <header class="app-header">
-            <div class="header-content">
-                <h1>News Agent</h1>
-                <input type="hidden" id="sessionId" value="{{ session_id }}">
-                <div class="header-actions">
-                    <button id="newChatBtn" class="icon-btn">
-                        <i class="fas fa-plus"></i>
-                    </button>
-                    <button id="settingsBtn" class="icon-btn">
-                        <i class="fas fa-cog"></i>
-                    </button>
-                    <!-- <button id="themeSwitchBtn" class="icon-btn">
-                        <i class="fas fa-moon"></i>
-                    </button> -->
-                </div>
+            <a href="{{ url_for('chat') }}" class="logo">
+                <i class="fas fa-newspaper"></i>
+                News Agent
+            </a>
+            <div class="header-actions">
+                <button class="btn btn-secondary" id="newChatBtn" title="New Chat">
+                    <i class="fas fa-plus"></i>
+                    New Chat
+                </button>
+                <button class="btn btn-secondary" id="settingsBtn" title="Settings">
+                    <i class="fas fa-cog"></i>
+                </button>
+                <a href="{{ url_for('logout') }}" class="btn btn-danger" title="Logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                </a>
             </div>
         </header>
 
-        <main class="app-main">
-            <div class="voice-controls">
-                <button id="microphoneBtn" class="mic-btn">
-                    <i class="fas fa-microphone"></i>
-                </button>
-                <div id="voiceStatus" class="voice-status"></div>
-            </div>
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <div class="sidebar-header">
+                    <h2 class="sidebar-title">Recent Chats</h2>
+                    <p class="sidebar-subtitle">Your conversation history</p>
+                </div>
+                <div class="chat-history" id="chatHistory">
+                    <!-- Chat history items will be dynamically added here -->
+                </div>
+            </aside>
 
-            <div id="chatWindow" class="chat-window">
-                <div id="chatMessages" class="chat-messages">
-                    <div class="message-container bot-message-container">
-                        <div class="message-avatar bot-avatar">AI</div>
-                        <div class="message bot-message">
-                            Hi! I'm Nova, your AI assistant. How can I help you today?
+            <!-- Chat Area -->
+            <div class="chat-area">
+                <div class="chat-messages" id="chatMessages">
+                    <!-- Welcome Message -->
+                    <div class="message">
+                        <div class="message-avatar">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <div class="message-content">
+                            <div class="message-header">
+                                <span class="message-sender">News Agent</span>
+                                <span class="message-time">Just now</span>
+                            </div>
+                            <div class="message-text">
+                                <p>Hello! I'm your AI news assistant. I can help you:</p>
+                                <ul>
+                                    <li>Search for the latest news on any topic</li>
+                                    <li>Summarize news articles</li>
+                                    <li>Answer questions about current events</li>
+                                    <li>Provide context and analysis</li>
+                                </ul>
+                                <p>What would you like to know about today?</p>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="input-container">
-                <div class="input-wrapper">
-                    <input type="text" id="userInput" placeholder="Type your message...">
-                    <button id="sendBtn" class="send-btn">
-                        <i class="fas fa-paper-plane"></i>
-                    </button>
+                <!-- News Results Area -->
+                <div class="news-results" id="newsResults">
+                    <!-- News results will be dynamically added here -->
+                </div>
+
+                <!-- Input Area -->
+                <div class="input-area">
+                    <form class="input-form" id="chatForm">
+                        <div class="input-field">
+                            <input type="text" id="messageInput" placeholder="Ask me anything about the news..." autocomplete="off">
+                            <div class="input-actions">
+                                <button type="button" class="input-action" id="clearBtn" title="Clear">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                                <button type="button" class="input-action" id="voiceBtn" title="Voice Input">
+                                    <i class="fas fa-microphone"></i>
+                                </button>
+                                <button type="submit" class="input-action" id="sendButton" title="Send">
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
         </main>
     </div>
 
-    <!-- Settings Modal -->
-    <div id="settingsModal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn">&times;</span>
-            <h2>Settings</h2>
-            <div class="settings-group">
-                <label>Voice Language</label>
-                <select id="voiceLangSelect">
-                    <option value="en-US">English (US)</option>
-                </select>
-            </div>
-        </div>
-    </div>
-
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/chat.js') }}"></script>
 </body>
 </html>
