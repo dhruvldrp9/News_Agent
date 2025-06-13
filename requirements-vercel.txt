@@ -1,0 +1,12 @@
+Flask==3.1.0
+beautifulsoup4==4.12.3
+requests==2.32.3
+python-dotenv
+openai
+elevenlabs==1.50.5
+groq==0.4.2
+werkzeug
+# Using a smaller spaCy model
+spacy==3.8.0
+# Download spaCy model during build
+https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl#sha256=1932429db727d4bff3deed6b34cfc05df17794f4a52eeb26cf8928f7c1a0fb85 
