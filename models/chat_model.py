@@ -7,16 +7,20 @@ load_dotenv()  # <-- This line loads .env variables into the environment
 
 communication_agent = GPTConversationSystem(os.getenv('OPENAI_API_KEY'))
 
-def generate_response(conversation_history):
+def generate_response(conversation_history, news_region):
     """
-    Generate a simple conversational response.
+    Generate a conversational response using the conversation history and news region.
     In a real application, this would be replaced with an AI model.
     """
     last_user_message = conversation_history[-1]['content'] if conversation_history else ''
-    
-    response = communication_agent.get_gpt_response(last_user_message)
 
-    return response
+    try:
+        # Generate response using the conversation system with news region
+        response = communication_agent.get_gpt_response(last_user_message, news_region)
+        return response
+    except Exception as e:
+        print(f"Error in generate_response: {str(e)}")
+        return "I apologize, but I encountered an error processing your request."
 
 def text_to_speech_stream(text):
     return communication_agent.text_to_speech_stream(text)

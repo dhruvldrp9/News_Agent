@@ -1,3 +1,4 @@
+# Updated chat endpoint to handle news region parameter
 from flask import Flask, render_template, request, jsonify, redirect, url_for, session
 import os
 import json
@@ -12,6 +13,9 @@ import logging
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
+app.config['SESSION_COOKIE_SECURE'] = False  # Allow over HTTP for development
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 
 # Initialize API clients
 client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
@@ -74,8 +78,10 @@ def load_chat_histories():
 
 def save_chat_histories(histories):
     try:
+        os.makedirs('data', exist_ok=True)
         with open(CHAT_HISTORIES_FILE, 'w') as f:
             json.dump(histories, f, indent=2)
+        logging.info(f'Chat histories saved successfully. Total users: {len(histories)}')
     except Exception as e:
         logging.error(f'Error saving chat histories: {e}')
 
@@ -139,12 +145,20 @@ def login():
             if not user:
                 return jsonify({'error': 'Invalid email or password'}), 401
 
+            # Ensure user has an ID, create one if missing
+            if 'id' not in user:
+                user['id'] = str(uuid.uuid4())
+                save_users(users)  # Save the updated user data
+
             # Set session data
             session.clear()  # Clear any existing session data
-            session['user_id'] = user.get('id')
-            session['user_name'] = user.get('name')
-            session['user_email'] = user.get('email')
-            
+            session['user_id'] = user['id']
+            session['user_name'] = user['name']
+            session['user_email'] = user['email']
+
+            # Debug logging
+            app.logger.info(f"Login successful for user: {user['id']}, name: {user['name']}")
+
             # Set session expiry based on remember me
             if remember:
                 session.permanent = True
@@ -168,6 +182,11 @@ def logout():
     session.clear()
     return redirect(url_for('login'))
 
+@app.route('/voice', methods=['GET'])
+@login_required
+def voice_assistance():
+    return render_template('voice.html')
+
 @app.route('/chat', methods=['GET', 'POST'])
 @login_required
 def chat():
@@ -188,18 +207,18 @@ def chat():
 
         # Load chat histories
         chat_histories = load_chat_histories()
-        
+
         # Initialize user's chat history if it doesn't exist
         if user_id not in chat_histories:
             chat_histories[user_id] = []
-        
+
         # Initialize session if it doesn't exist
         if not session_id:
             session_id = str(uuid.uuid4())
-        
+
         if session_id not in conversation_sessions:
             conversation_sessions[session_id] = []
-        
+
         # Add user message to conversation history
         conversation_sessions[session_id].append({
             'role': 'user',
@@ -207,10 +226,13 @@ def chat():
             'timestamp': datetime.now().isoformat()
         })
 
+        # Get news region from request (default to global)
+        news_region = data.get('news_region', 'global')
+
         # Generate AI response
         try:
-            ai_response = generate_response(conversation_sessions[session_id])
-            
+            ai_response = generate_response(conversation_sessions[session_id], news_region)
+
             # Add AI response to conversation history
             conversation_sessions[session_id].append({
                 'role': 'assistant',
@@ -218,13 +240,28 @@ def chat():
                 'timestamp': datetime.now().isoformat()
             })
 
-            # Save the conversation to user's chat history
-            chat_histories[user_id].append({
-                'session_id': session_id,
-                'messages': conversation_sessions[session_id],
-                'created_at': datetime.now().isoformat(),
-                'last_updated': datetime.now().isoformat()
-            })
+            # Find existing session or create new one
+            existing_session = None
+            for i, chat in enumerate(chat_histories[user_id]):
+                if chat['session_id'] == session_id:
+                    existing_session = i
+                    break
+
+            current_time = datetime.now().isoformat()
+
+            if existing_session is not None:
+                # Update existing session
+                chat_histories[user_id][existing_session]['messages'] = conversation_sessions[session_id].copy()
+                chat_histories[user_id][existing_session]['last_updated'] = current_time
+            else:
+                # Create new session
+                chat_histories[user_id].append({
+                    'session_id': session_id,
+                    'messages': conversation_sessions[session_id].copy(),
+                    'created_at': current_time,
+                    'last_updated': current_time
+                })
+
             save_chat_histories(chat_histories)
 
             return jsonify({
@@ -243,33 +280,54 @@ def chat():
 @app.route('/chat/history', methods=['GET'])
 @login_required
 def get_chat_history():
-    user_id = session.get('user_id')
-    if not user_id:
-        return jsonify({'error': 'User not authenticated'}), 401
+    try:
+        user_id = session.get('user_id')
+        if not user_id:
+            app.logger.error(f"No user_id in session: {session}")
+            return jsonify({'error': 'User not authenticated'}), 401
 
-    chat_histories = load_chat_histories()
-    user_history = chat_histories.get(user_id, [])
-    
-    # Sort history by last_updated in descending order
-    user_history.sort(key=lambda x: x['last_updated'], reverse=True)
-    
-    return jsonify({
-        'history': user_history
-    })
+        chat_histories = load_chat_histories()
+        user_history = chat_histories.get(user_id, [])
+
+        # Sort history by last_updated in descending order
+        if user_history:
+            user_history.sort(key=lambda x: x.get('last_updated', ''), reverse=True)
+
+        # Also restore conversation sessions from history
+        for chat in user_history:
+            session_id = chat.get('session_id')
+            if session_id and session_id not in conversation_sessions:
+                conversation_sessions[session_id] = chat.get('messages', [])
+
+        app.logger.info(f"Retrieved {len(user_history)} chat sessions for user {user_id}")
+
+        return jsonify({
+            'history': user_history
+        })
+    except Exception as e:
+        app.logger.error(f"Error getting chat history: {str(e)}")
+        return jsonify({'error': 'Failed to load chat history'}), 500
 
 @app.route('/chat/new', methods=['POST'])
 @login_required
 def new_chat():
-    user_id = session.get('user_id')
-    if not user_id:
-        return jsonify({'error': 'User not authenticated'}), 401
+    try:
+        user_id = session.get('user_id')
+        if not user_id:
+            app.logger.error(f"No user_id in session: {session}")
+            return jsonify({'error': 'User not authenticated'}), 401
 
-    session_id = str(uuid.uuid4())
-    conversation_sessions[session_id] = []
-    
-    return jsonify({
-        'session_id': session_id
-    })
+        session_id = str(uuid.uuid4())
+        conversation_sessions[session_id] = []
+
+        app.logger.info(f"Created new chat session {session_id} for user {user_id}")
+
+        return jsonify({
+            'session_id': session_id
+        })
+    except Exception as e:
+        app.logger.error(f"Error creating new chat: {str(e)}")
+        return jsonify({'error': 'Failed to create new chat'}), 500
 
 @app.route('/speak', methods=['POST'])
 @login_required
@@ -277,26 +335,42 @@ def speak():
     try:
         data = request.get_json()
         text = data.get('text', '')
+        session_id = data.get('session_id', '')
 
         if not text:
             return jsonify({'error': 'No text provided'}), 400
 
-        # Generate audio
-        audio = eleven_client.generate(
-            text=text,
-            voice="Rachel",
-            model="eleven_monolingual_v1"
-        )
+        # Get or create conversation session for TTS
+        if session_id not in conversation_sessions:
+            conversation_sessions[session_id] = []
+
+        # Use the Communication_OpenAI class for TTS
+        from models.Communication_OpenAI import GPTConversationSystem
+        
+        openai_api_key = os.getenv('OPENAI_API_KEY')
+        if not openai_api_key:
+            return jsonify({'error': 'OpenAI API key not configured'}), 500
+
+        gpt_system = GPTConversationSystem(openai_api_key)
+        
+        # Get audio stream from ElevenLabs
+        audio_stream = gpt_system.text_to_speech_stream(text)
+        
+        if not audio_stream:
+            return jsonify({'error': 'Failed to generate audio'}), 500
 
         # Save audio file
         audio_path = f"static/audio/response_{int(time.time())}.mp3"
         os.makedirs(os.path.dirname(audio_path), exist_ok=True)
+        
+        # Write the audio stream to file
         with open(audio_path, 'wb') as f:
-            f.write(audio)
+            for chunk in audio_stream:
+                f.write(chunk)
 
         return jsonify({
             'success': True,
-            'audio_url': audio_path
+            'audio_url': f"/{audio_path}"
         })
 
     except Exception as e:

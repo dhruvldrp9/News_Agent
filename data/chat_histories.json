@@ -1,1 +1,346 @@
-{} 
+{
+  "2c1264a8-1505-417b-964f-3dbfc29198da": [
+    {
+      "session_id": "local_1749800115946",
+      "messages": [
+        {
+          "role": "user",
+          "content": "what are the latest news today?",
+          "timestamp": "2025-06-13T07:42:47.460747"
+        },
+        {
+          "role": "assistant",
+          "content": "Today's latest news includes an Air India flight making an emergency landing in Thailand's Phuket due to a bomb threat, which turned out to be a false alarm. Additionally, there was a tragic plane crash in Ahmedabad involving an Air India aircraft that claimed the lives of at least 260 people. Prime Minister Narendra Modi visited the crash site, where bodies of victims were being handed over to their families. These are some of the significant events making headlines today.",
+          "timestamp": "2025-06-13T07:42:55.259726"
+        }
+      ],
+      "created_at": "2025-06-13T07:42:55.259737",
+      "last_updated": "2025-06-13T07:42:55.259737"
+    },
+    {
+      "session_id": "4b90d395-bf82-43c2-a3e3-aefd59df8dfb",
+      "messages": [
+        {
+          "role": "user",
+          "content": "what are the latest news today?",
+          "timestamp": "2025-06-13T08:36:12.353864"
+        },
+        {
+          "role": "assistant",
+          "content": "Today's latest news includes updates on the Air India plane crash in Ahmedabad, where there was a lone survivor named Vishwash Kumar. He mentioned that his section of the aircraft remained grounded and did not crash onto the roof of the building like the rest of the plane. Additionally, there are featured articles on various topics like Health, Entertainment, Astrology, Real Estate, Lifestyle, Education, Business, and more available for readers to explore.",
+          "timestamp": "2025-06-13T08:36:16.662108"
+        }
+      ],
+      "created_at": "2025-06-13T08:36:16.662122",
+      "last_updated": "2025-06-13T08:36:16.662122"
+    },
+    {
+      "session_id": "6c899669-33fb-44a4-b234-49bf24e9adfa",
+      "messages": [
+        {
+          "role": "user",
+          "content": "what are the latest news today",
+          "timestamp": "2025-06-13T08:41:06.307493"
+        },
+        {
+          "role": "assistant",
+          "content": "Today's latest news includes updates on the tragic Air India plane crash in Ahmedabad, with Gujarat ATS recovering a Digital Video Recorder (DVR) from the debris. The lone survivor, Vishwash Kumar, shared his experience stating that his section of the aircraft remained grounded and did not crash onto the building's roof like the rest of the plane. Additionally, there are features like Ad lite for a minimal ad experience, HT Premium articles offering expertly crafted content, and Quickreads providing news briefs in a summary format.",
+          "timestamp": "2025-06-13T08:41:13.375249"
+        }
+      ],
+      "created_at": "2025-06-13T08:41:13.375263",
+      "last_updated": "2025-06-13T08:41:13.375263"
+    },
+    {
+      "session_id": "491e26fc-1740-4111-9842-f1f88b6d4fba",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Show me the latest news headlines",
+          "timestamp": "2025-06-13T09:08:19.722734"
+        },
+        {
+          "role": "assistant",
+          "content": "The latest news headlines include updates on the Air India plane crash in Ahmedabad, where Vishwash Kumar, a survivor, shared his experience. Additionally, there are horoscope predictions for June 14, 2025, and Karnataka SSLC 2 Result 2025 has been declared. Would you like more details on any specific news headline?",
+          "timestamp": "2025-06-13T09:08:24.292688"
+        },
+        {
+          "role": "user",
+          "content": "Give me market updates and financial news",
+          "timestamp": "2025-06-13T09:08:28.919848"
+        },
+        {
+          "role": "assistant",
+          "content": "I'm sorry, but the news data available currently does not include specific market updates or financial news. If you have any other questions or need information on a different topic, feel free to ask!",
+          "timestamp": "2025-06-13T09:08:34.008693"
+        },
+        {
+          "role": "user",
+          "content": "What are the current global events and world news?",
+          "timestamp": "2025-06-13T09:08:47.171394"
+        },
+        {
+          "role": "assistant",
+          "content": "The current global events and world news highlighted in the available data include the Air India plane crash in Ahmedabad, horoscope predictions for June 14, 2025, and the declaration of Karnataka SSLC 2 Result 2025. These are some of the significant updates from around the world. If you're interested in more specific details or have any other questions, feel free to ask!",
+          "timestamp": "2025-06-13T09:08:52.929442"
+        }
+      ],
+      "created_at": "2025-06-13T09:08:24.292700",
+      "last_updated": "2025-06-13T09:08:52.929455"
+    },
+    {
+      "session_id": "c0053a97-9efd-4d0f-9506-b9aa207947a8",
+      "messages": [
+        {
+          "role": "user",
+          "content": "What are the current global events and world news?",
+          "timestamp": "2025-06-13T09:18:46.773076"
+        },
+        {
+          "role": "user",
+          "content": "Show me the latest news headlines",
+          "timestamp": "2025-06-13T09:20:07.606646"
+        },
+        {
+          "role": "assistant",
+          "content": "The latest news headlines include Israel conducting targeted strikes on Iran's nuclear program, with Secretary of State Rubio stating that the United States was not involved in the strikes. Israeli Prime Minister Netanyahu expressed solidarity with the Iranian people against their government, while there are concerns about potential escalation between Iran and Israel. Additionally, there are updates on legal battles related to National Guard control in California, ongoing protests in Los Angeles, and an arrest warrant issued for NFL star Antonio Brown on an attempted murder charge. Would you like more details on any specific headline?",
+          "timestamp": "2025-06-13T09:20:17.221688"
+        },
+        {
+          "role": "user",
+          "content": "Show me the latest news headlines",
+          "timestamp": "2025-06-13T09:20:36.575371"
+        },
+        {
+          "role": "assistant",
+          "content": "The latest news headlines include Israel conducting targeted strikes on Iran's nuclear program, with Secretary of State Rubio stating that the United States was not involved in the strikes. Israeli Prime Minister Netanyahu expressed solidarity with the Iranian people against their government, while there are concerns about potential escalation between Iran and Israel. Additionally, there are updates on legal battles related to National Guard control in California, ongoing protests in Los Angeles, and an arrest warrant issued for NFL star Antonio Brown on an attempted murder charge. Would you like more details on any specific headline?",
+          "timestamp": "2025-06-13T09:20:44.646055"
+        },
+        {
+          "role": "user",
+          "content": "What are the current global events and world news?",
+          "timestamp": "2025-06-13T09:20:49.729685"
+        },
+        {
+          "role": "assistant",
+          "content": "I apologize, but I encountered an error. Could you please repeat that?",
+          "timestamp": "2025-06-13T09:32:39.349526"
+        }
+      ],
+      "created_at": "2025-06-13T09:20:17.221700",
+      "last_updated": "2025-06-13T09:32:39.349540"
+    },
+    {
+      "session_id": "fb0b6d29-2f9b-43c9-911e-71e769dc0850",
+      "messages": [
+        {
+          "role": "user",
+          "content": "what are the latest news today?",
+          "timestamp": "2025-06-13T10:58:01.428273"
+        },
+        {
+          "role": "assistant",
+          "content": "Today's latest news includes Israel striking an Iran Air India plane, US protests, North Korea's damaged destroyer, Wes Anderson, and Carlo Acutis becoming the first millennial saint. Additionally, Trump has warned Iran to make a deal or face \"even more brutal\" attacks. Would you like more details on any of these topics?",
+          "timestamp": "2025-06-13T10:58:11.545843"
+        },
+        {
+          "role": "user",
+          "content": "what are the latest news?",
+          "timestamp": "2025-06-13T10:58:44.801178"
+        },
+        {
+          "role": "assistant",
+          "content": "I apologize, but I encountered an error. Could you please repeat that?",
+          "timestamp": "2025-06-13T10:58:48.050498"
+        },
+        {
+          "role": "user",
+          "content": "what are the latest news?",
+          "timestamp": "2025-06-13T10:58:56.007535"
+        },
+        {
+          "role": "assistant",
+          "content": "I apologize, but I encountered an error. Could you please repeat that?",
+          "timestamp": "2025-06-13T10:58:57.442286"
+        },
+        {
+          "role": "user",
+          "content": "what are the latest news today?",
+          "timestamp": "2025-06-13T11:00:40.965909"
+        },
+        {
+          "role": "assistant",
+          "content": "I apologize, but I encountered an error. Could you please repeat that?",
+          "timestamp": "2025-06-13T11:00:44.121401"
+        }
+      ],
+      "created_at": "2025-06-13T10:58:11.545857",
+      "last_updated": "2025-06-13T11:00:44.121415"
+    },
+    {
+      "session_id": "5478071c-e023-4e58-b4a8-336c0462e80f",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Show me the latest news headlines",
+          "timestamp": "2025-06-13T11:06:18.425080"
+        },
+        {
+          "role": "assistant",
+          "content": "I can provide you with the latest news headlines based on the information you shared from a Google search:\n\n1. Israel strikes Iran's nuclear and military sites in an unprecedented attack.\n2. Smoke rises up to the sky in Tehran, Iran following the attack.\n\nThese headlines indicate a significant event involving Israel and Iran. If you would like more details or have any specific questions about these developments, feel free to ask!",
+          "timestamp": "2025-06-13T11:06:26.996797"
+        },
+        {
+          "role": "user",
+          "content": "Show me the latest news headlines",
+          "timestamp": "2025-06-13T11:06:38.055070"
+        },
+        {
+          "role": "assistant",
+          "content": "I'm sorry, but based on the information you shared from a Google search for Indian news, there are no specific headlines provided in your input. If you have any other specific news topic or query in mind related to India or any other region, feel free to ask, and I'll do my best to provide you with relevant information.",
+          "timestamp": "2025-06-13T11:06:49.980426"
+        }
+      ],
+      "created_at": "2025-06-13T11:06:26.996812",
+      "last_updated": "2025-06-13T11:06:49.980440"
+    },
+    {
+      "session_id": "3ed31b0d-3bdc-4431-af3b-2f9919394560",
+      "messages": [
+        {
+          "role": "user",
+          "content": "What are the current Indian events and world news?",
+          "timestamp": "2025-06-13T11:12:17.871520"
+        },
+        {
+          "role": "assistant",
+          "content": "Based on the information provided from a Google search for Indian news, here is a current event related to India:\n\n- Grieving Air India crash families wait for answers as investigators search wreckage: All but one of the 242 people on board the London-bound flight died when it crashed into a residential area shortly after take-off.\n\nFor more specific details or updates on Indian events and world news, feel free to ask any questions you may have!",
+          "timestamp": "2025-06-13T11:12:26.408614"
+        },
+        {
+          "role": "user",
+          "content": "Show me the latest news headlines",
+          "timestamp": "2025-06-13T11:14:09.363501"
+        },
+        {
+          "role": "assistant",
+          "content": "I'm sorry, but based on the information you provided from a Google search for Indian news, there are no specific headlines or news updates included in your input. If you have any other specific questions or topics in mind that you'd like to know about, feel free to ask, and I'll do my best to provide you with relevant information.",
+          "timestamp": "2025-06-13T11:14:14.060487"
+        },
+        {
+          "role": "user",
+          "content": "latest news today",
+          "timestamp": "2025-06-13T11:14:23.870450"
+        },
+        {
+          "role": "assistant",
+          "content": "Here are some of the latest news highlights from today based on the information provided:\n\n1. \"Next attack will be...\": Trump's chilling warning to Tehran after Israel strikes.\n2. 200 jets hit 100 targets: How Israel carried out covert strikes deep inside Iran.\n3. Grandparents, couples starting afresh, students building careers\u2026 lives lost in Ahmedabad tragedy: NIA team visits Air India plane crash site.\n4. Why did Israel strike Iran?\n\nThese headlines offer insights into significant events related to international relations and tragic incidents. If you would like more details or have any specific questions about these updates, feel free to ask!",
+          "timestamp": "2025-06-13T11:14:30.767397"
+        }
+      ],
+      "created_at": "2025-06-13T11:12:26.408635",
+      "last_updated": "2025-06-13T11:14:30.767412"
+    },
+    {
+      "session_id": "2e3c996c-5195-4a50-b20b-2d1d2872e581",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Show me the latest news headlines",
+          "timestamp": "2025-06-13T11:20:03.416720"
+        },
+        {
+          "role": "assistant",
+          "content": "I can provide you with the latest news headlines based on the information available. Some of the current topics include:\n\n1. Ahmedabad Plane Crash Live\n2. Israel Strike on Iran Live\n3. Karnataka SSLC 2 Result\n4. Gautam Gambhir NEET UG 2025 Result Live\n\nThese are some of the trending news topics from various categories like sports, education, and international events. If you're interested in more details about any specific headline or category, feel free to ask!",
+          "timestamp": "2025-06-13T11:20:09.491108"
+        },
+        {
+          "role": "user",
+          "content": "tell me more about Ahmedabad plane crashe",
+          "timestamp": "2025-06-13T11:20:39.185076"
+        },
+        {
+          "role": "assistant",
+          "content": "The Ahmedabad plane crash was a tragic incident where all but one person on board a London-bound flight lost their lives. Families of the air crash victims are clinging to hope amidst this devastating event. The crash occurred with only 10 minutes separating life and death for passengers, highlighting the sudden and heartbreaking nature of the tragedy.\n\nImtiyaz Ali Sayed, who lost his family in the crash, refuses to grieve and remains strong in the face of immense loss. The details surrounding the crash are still being investigated, and the impact on the families involved is profound.\n\nIf you have any specific questions or would like more information about this tragic event, feel free to ask.",
+          "timestamp": "2025-06-13T11:20:46.822429"
+        },
+        {
+          "role": "user",
+          "content": "how many passangers were on board on that plane crash",
+          "timestamp": "2025-06-13T11:21:45.199092"
+        },
+        {
+          "role": "assistant",
+          "content": "The tragic Air India plane crash in Ahmedabad had at least 265 people onboard, including passengers and crew members. The devastating incident resulted in a significant loss of lives, with only one passenger on the Boeing jet surviving. Rescue teams, along with sniffer dogs, were actively combing the crash site to search for any survivors and assist in the recovery efforts.\n\nIf you have any more questions or need further details regarding this heartbreaking event or any related information, feel free to ask.",
+          "timestamp": "2025-06-13T11:21:52.059483"
+        },
+        {
+          "role": "user",
+          "content": "what is the exact place of plane crash?",
+          "timestamp": "2025-06-13T11:22:24.095667"
+        },
+        {
+          "role": "assistant",
+          "content": "The exact place of the plane crash in Ahmedabad was in a residential area near the airport. The tragic incident resulted in a significant loss of lives, with rescue teams and officials actively involved in search and recovery operations at the crash site.\n\nIf you have any more questions or need further details about this event or any related information, feel free to ask.",
+          "timestamp": "2025-06-13T11:22:30.401815"
+        }
+      ],
+      "created_at": "2025-06-13T11:20:09.491123",
+      "last_updated": "2025-06-13T11:22:30.401830"
+    },
+    {
+      "session_id": "a235e7a2-4178-424b-af8e-60c51cfbf6d4",
+      "messages": [
+        {
+          "role": "user",
+          "content": "what are the latest news today",
+          "timestamp": "2025-06-13T11:31:38.020210"
+        },
+        {
+          "role": "assistant",
+          "content": "Today's latest news includes reports of Israel striking Iran's nuclear and military sites in an unprecedented attack. Smoke was seen rising in Tehran, Iran. This event marks a significant development in the ongoing tensions between the two countries.",
+          "timestamp": "2025-06-13T11:31:46.674543"
+        }
+      ],
+      "created_at": "2025-06-13T11:31:46.674562",
+      "last_updated": "2025-06-13T11:31:46.674562"
+    },
+    {
+      "session_id": "d1d6119a-89ae-4056-bd8c-71d1538f21fd",
+      "messages": [
+        {
+          "role": "user",
+          "content": "what are the latest news today",
+          "timestamp": "2025-06-13T11:36:02.653685"
+        },
+        {
+          "role": "assistant",
+          "content": "Today's latest news includes Israel striking Iran's nuclear and military sites in an unprecedented attack. Smoke was reported rising up to the sky in Tehran, Iran. This development marks a significant escalation in tensions between the two nations.",
+          "timestamp": "2025-06-13T11:36:09.968914"
+        },
+        {
+          "role": "user",
+          "content": "what are the latest news today",
+          "timestamp": "2025-06-13T11:38:35.347522"
+        },
+        {
+          "role": "assistant",
+          "content": "Today's latest news includes a tragic Air India plane crash in Ahmedabad, leaving devastation in its wake. Additionally, the ongoing World Test Championship Final saw an intense Day 2 with Cummins and Rabada showcasing a competitive performance as 14 wickets fell. Moreover, protests have spread across the US, leading to a curfew in Los Angeles and increased protection for ICE.",
+          "timestamp": "2025-06-13T11:38:42.213990"
+        },
+        {
+          "role": "user",
+          "content": "can you please give me a detail more on Ahmedabad and airplane crash",
+          "timestamp": "2025-06-13T11:39:18.317485"
+        },
+        {
+          "role": "assistant",
+          "content": "The recent Air India plane crash in Ahmedabad involved an Ahmedabad to London flight that tragically crashed shortly after takeoff from Sardar Vallabhbhai Patel International Airport. The crash resulted in the loss of 265 lives. Currently, authorities are working on identifying the victims through DNA testing, with results expected within the next 72 hours. The investigation into the cause of the crash is ongoing, and more details are likely to emerge as the situation develops.",
+          "timestamp": "2025-06-13T11:39:30.275097"
+        }
+      ],
+      "created_at": "2025-06-13T11:36:09.968929",
+      "last_updated": "2025-06-13T11:39:30.275114"
+    }
+  ]
+}

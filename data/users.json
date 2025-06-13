@@ -1,16 +1,10 @@
 {
     "users": [
         {
+            "id": "2c1264a8-1505-417b-964f-3dbfc29198da",
             "name": "Gabbar",
             "email": "abc@gmail.com",
             "password": "abcgmail"
-        },
-        {
-            "id": 2,
-            "name": "Parth",
-            "email": "parth@gmail.com",
-            "password": "parthgmail",
-            "created_at": "2025-06-11T16:52:48.420211"
         }
     ]
 }

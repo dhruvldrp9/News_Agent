@@ -87,14 +87,18 @@ class WebScraper:
         """
         Main scraping method
         """
-        # Fetch page content
-        self.url = url
-        response = self.fetch_page_content()
-        if not response:
-            return
-        
-        # Parse HTML
-        soup = BeautifulSoup(response.text, 'html.parser')
-        
-        # Save webpage text
-        return self.save_webpage_text(soup)
+        try:
+            # Fetch page content
+            self.url = url
+            response = self.fetch_page_content()
+            if not response:
+                return None
+            
+            # Parse HTML
+            soup = BeautifulSoup(response.text, 'html.parser')
+            
+            # Save webpage text
+            return self.save_webpage_text(soup)
+        except Exception as e:
+            print(f"Error in scrape method for {url}: {str(e)}")
+            return None

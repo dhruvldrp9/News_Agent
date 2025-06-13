@@ -127,11 +127,14 @@ class GPTConversationSystem:
         self.audio_dir = "audio_recordings"
         os.makedirs(self.audio_dir, exist_ok=True)
 
-    def get_global_news(self,user_input):
+    def get_global_news(self, user_input, news_region='global'):
+        # Set country code based on region
+        country_code = "in" if news_region == 'india' else "us"
+        
         params = {
         "engine": "google",
         "q": user_input,
-        "gl": "in",
+        "gl": country_code,
         "hl": "en",
         "api_key": os.getenv("GOOGLE_NEWS_API_KEY")
         }
@@ -140,11 +143,17 @@ class GPTConversationSystem:
         results = search.get_dict()
         result_list = ''
         filter_keywords = ["thehindu.com", "hindustantimes.com", "ndtv.com", "aajtak.in", "indiatoday.in"]
-        for i in results['organic_results']:
+        # for i in results['organic_results']:
+        #     try:
+        #         if any(keyword in i['link'] for keyword in filter_keywords):
+        #             text = self.scrapper.scrape(i['link'])
+        #             result_list += text
+        #     except Exception as e:
+        #         continue
+        for i in results['organic_results'][:5]:
             try:
-                if any(keyword in i['link'] for keyword in filter_keywords):
-                    text = self.scrapper.scrape(i['link'])
-                    result_list += text
+                text = self.scrapper.scrape(i['link'])
+                result_list += text
             except Exception as e:
                 continue
 
@@ -152,7 +161,7 @@ class GPTConversationSystem:
         summarized_text = self.summarizer.summarize(result_list, 512, 'word')
         return summarized_text
 
-    def get_gpt_response(self, user_input: str) -> str:
+    def get_gpt_response(self, user_input: str, news_region: str = 'global') -> str:
         """Get response from GPT model"""   
         try:
             # Check if we need to refresh context
@@ -167,7 +176,7 @@ class GPTConversationSystem:
 
             if self.agent == "News":
 
-                user_input = f"""Here is what found on google search news: {self.get_global_news(user_input)}.
+                user_input = f"""Here is what found on google search news: {self.get_global_news(user_input, news_region)}.
                 You need to answer users query with your defined role and this available data only. if don't found any data answer that question if you have proper knowledge, else ask user to provide proper question.
 
                 here is a user query: {user_input}.

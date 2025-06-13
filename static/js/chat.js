@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const sendButton = document.getElementById('sendButton');
     const newChatBtn = document.getElementById('newChatBtn');
     const chatHistory = document.getElementById('chatHistory');
+    const micButton = document.getElementById('micButton');
 
     let currentSessionId = localStorage.getItem('currentSessionId') || '';
 
@@ -23,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function() {
         chatForm.addEventListener('submit', handleChatSubmit);
     }
 
-    // Handle Enter key
+    // Handle Enter key and auto-resize
     if (messageInput) {
         messageInput.addEventListener('keypress', function(e) {
             if (e.key === 'Enter' && !e.shiftKey) {
@@ -31,16 +32,42 @@ document.addEventListener('DOMContentLoaded', function() {
                 handleChatSubmit(e);
             }
         });
+
+        // Auto-resize textarea
+        messageInput.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+        });
+
+        // Enhanced placeholder animation
+        messageInput.addEventListener('focus', function() {
+            this.style.borderColor = 'var(--accent-cyan)';
+            this.style.boxShadow = 'var(--glow-cyan)';
+        });
+
+        messageInput.addEventListener('blur', function() {
+            if (!this.value) {
+                this.style.borderColor = 'var(--border-primary)';
+                this.style.boxShadow = 'none';
+            }
+        });
     }
 
     // New Chat button functionality
     if (newChatBtn && chatMessages) {
         newChatBtn.addEventListener('click', function() {
+            // Add visual feedback
+            this.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                this.style.transform = 'scale(1)';
+            }, 150);
             createNewChat();
         });
     }
 
     function createNewChat() {
+        showLoadingState();
+
         fetch('/chat/new', {
             method: 'POST',
             headers: {
@@ -48,47 +75,133 @@ document.addEventListener('DOMContentLoaded', function() {
                 'Accept': 'application/json',
                 'X-Requested-With': 'XMLHttpRequest'
             },
-            credentials: 'same-origin'  // Important for session cookies
+            credentials: 'same-origin'
         })
         .then(response => {
             if (!response.ok) {
+                if (response.status === 401) {
+                    window.location.href = '/login';
+                    return;
+                }
                 throw new Error('Failed to create new chat');
             }
             return response.json();
         })
         .then(data => {
-            currentSessionId = data.session_id;
-            localStorage.setItem('currentSessionId', currentSessionId);
-            
-            // Clear chat messages and show welcome message
-            chatMessages.innerHTML = `
-                <div class="message">
-                    <div class="message-avatar">
-                        <i class="fas fa-robot"></i>
-                    </div>
-                    <div class="message-content">
-                        <div class="message-header">
-                            <span class="message-sender">News Agent</span>
-                            <span class="message-time">Just now</span>
-                        </div>
-                        <div class="message-text">
-                            <p>Hello! I'm your AI news assistant. I can help you:</p>
-                            <ul>
-                                <li>Search for the latest news on any topic</li>
-                                <li>Summarize news articles</li>
-                                <li>Answer questions about current events</li>
-                                <li>Provide context and analysis</li>
-                            </ul>
-                            <p>What would you like to know about today?</p>
-                        </div>
-                    </div>
-                </div>
-            `;
+            if (data && data.session_id) {
+                currentSessionId = data.session_id;
+                localStorage.setItem('currentSessionId', currentSessionId);
+                
+                // Clear the chat messages completely
+                chatMessages.innerHTML = '';
+                
+                // Show welcome message for the new chat
+                showWelcomeMessage();
+                
+                // Reload chat history to update sidebar
+                loadChatHistory();
+                
+                // Scroll to bottom
+                setTimeout(() => scrollToBottom(), 100);
+            }
         })
         .catch(error => {
             console.error('Error creating new chat:', error);
-            addMessageToChat('error', 'Failed to create new chat. Please try again.');
+            showErrorMessage('Failed to create new chat. Please try again.');
+        })
+        .finally(() => {
+            hideLoadingState();
         });
+    }
+
+    function showLoadingState() {
+        if (sendButton) {
+            sendButton.disabled = true;
+            sendButton.innerHTML = '<i class="fas fa-satellite-dish loading"></i> Processing...';
+        }
+    }
+
+    function hideLoadingState() {
+        if (sendButton) {
+            sendButton.disabled = false;
+            sendButton.innerHTML = '<i class="fas fa-paper-plane"></i> Send';
+        }
+    }
+
+    function showWelcomeMessage() {
+        const newsRegion = document.getElementById('newsRegion').value;
+        const isIndia = newsRegion === 'india';
+
+        const welcomeMessage = `
+            <div class="welcome-message animate-slide-in">
+                <h2 class="text-gradient glow-text">
+                    <i class="fas fa-robot"></i>
+                    Welcome to News Agent
+                </h2>
+                <p>Your AI-powered news companion is ready to assist you with the latest information from around the world.</p>
+                <div style="margin-top: 1.5rem; display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+                    <button class="btn btn-secondary welcome-prompt-btn" data-prompt="Show me the latest news headlines" data-region="${newsRegion}">
+                        <i class="fas fa-newspaper"></i>
+                        Latest News
+                    </button>
+                    <button class="btn btn-secondary welcome-prompt-btn" data-prompt="Give me market updates and financial news" data-region="${newsRegion}">
+                        <i class="fas fa-chart-line"></i>
+                        Market Updates
+                    </button>
+                    <button class="btn btn-secondary welcome-prompt-btn" data-prompt="What are the current ${isIndia ? 'Indian' : 'global'} events and world news?" data-region="${isIndia ? 'india' : 'global'}">
+                        <i class="fas fa-${isIndia ? 'flag' : 'globe'}"></i>
+                        ${isIndia ? 'India News' : 'Global Events'}
+                    </button>
+                </div>
+            </div>
+        `;
+
+        // Clear messages and add welcome message
+        chatMessages.innerHTML = welcomeMessage;
+
+        // Add click event listeners to the welcome prompt buttons
+        setTimeout(() => {
+            document.querySelectorAll('.welcome-prompt-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const prompt = this.dataset.prompt;
+                    const region = this.dataset.region;
+
+                    // Update the news region dropdown to match the button's region
+                    document.getElementById('newsRegion').value = region;
+
+                    // Add visual feedback
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        this.style.transform = 'scale(1)';
+                    }, 150);
+
+                    // Set the prompt in the input and send it
+                    if (messageInput) {
+                        messageInput.value = prompt;
+                        messageInput.focus();
+                        // Trigger the form submission
+                        handleChatSubmit(new Event('submit'));
+                    }
+                });
+            });
+        }, 100);
+    }
+
+    function showErrorMessage(message) {
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'message error-message animate-slide-in';
+        errorDiv.innerHTML = `
+            <div class="message-content">
+                <div class="message-header">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span class="message-sender">System Error</span>
+                    <span class="message-time">${new Date().toLocaleTimeString()}</span>
+                </div>
+                <div class="message-text">${message}</div>
+            </div>
+        `;
+        chatMessages.appendChild(errorDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
     function loadChatHistory() {
@@ -98,51 +211,39 @@ document.addEventListener('DOMContentLoaded', function() {
                 'Accept': 'application/json',
                 'X-Requested-With': 'XMLHttpRequest'
             },
-            credentials: 'same-origin'  // Important for session cookies
+            credentials: 'same-origin'
         })
         .then(response => {
             if (!response.ok) {
+                if (response.status === 401) {
+                    window.location.href = '/login';
+                    return;
+                }
                 throw new Error('Failed to load chat history');
             }
             return response.json();
         })
         .then(data => {
-            if (data.history && data.history.length > 0) {
-                // Display chat history in sidebar
-                chatHistory.innerHTML = data.history.map(chat => {
-                    const firstMessage = chat.messages[0]?.content || 'New Chat';
-                    const date = new Date(chat.created_at).toLocaleDateString();
-                    const isActive = chat.session_id === currentSessionId;
-                    return `
-                        <div class="chat-history-item ${isActive ? 'active' : ''}" data-session-id="${chat.session_id}">
-                            <div class="chat-history-preview">${firstMessage.substring(0, 50)}${firstMessage.length > 50 ? '...' : ''}</div>
-                            <div class="chat-history-date">${date}</div>
-                        </div>
-                    `;
-                }).join('');
-
-                // Add click handlers for chat history items
-                document.querySelectorAll('.chat-history-item').forEach(item => {
-                    item.addEventListener('click', function() {
-                        const sessionId = this.dataset.sessionId;
-                        loadChatSession(sessionId);
-                    });
-                });
+            if (data && data.history) {
+                displayChatHistory(data.history);
+            } else {
+                displayChatHistory([]);
             }
         })
         .catch(error => {
             console.error('Error loading chat history:', error);
-            addMessageToChat('error', 'Failed to load chat history. Please refresh the page.');
+            displayChatHistory([]);
         });
     }
 
     function loadChatSession(sessionId) {
         currentSessionId = sessionId;
         localStorage.setItem('currentSessionId', sessionId);
-        
+
         // Clear current messages
         chatMessages.innerHTML = '';
-        
+        showLoadingState();
+
         // Load messages for this session
         fetch('/chat/history', {
             method: 'GET',
@@ -150,7 +251,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 'Accept': 'application/json',
                 'X-Requested-With': 'XMLHttpRequest'
             },
-            credentials: 'same-origin'  // Important for session cookies
+            credentials: 'same-origin'
         })
         .then(response => {
             if (!response.ok) {
@@ -160,43 +261,160 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(data => {
             const chat = data.history.find(c => c.session_id === sessionId);
-            if (chat) {
-                chat.messages.forEach(message => {
-                    addMessageToChat(message.role, message.content);
+            if (chat && chat.messages && chat.messages.length > 0) {
+                chat.messages.forEach((message, index) => {
+                    setTimeout(() => {
+                        addMessageToChat(message.role, message.content);
+                        // Auto-scroll after the last message is added
+                        if (index === chat.messages.length - 1) {
+                            setTimeout(() => scrollToBottom(), 200);
+                        }
+                    }, index * 100); // Staggered animation
                 });
+            } else {
+                showWelcomeMessage();
             }
             // Update active state in sidebar
-            document.querySelectorAll('.chat-history-item').forEach(item => {
-                item.classList.toggle('active', item.dataset.sessionId === sessionId);
-            });
+            updateActiveChat(sessionId);
         })
         .catch(error => {
             console.error('Error loading chat session:', error);
-            addMessageToChat('error', 'Failed to load chat session. Please try again.');
+            showWelcomeMessage();
+        })
+        .finally(() => {
+            hideLoadingState();
+        });
+    }
+
+    function updateActiveChat(sessionId) {
+        document.querySelectorAll('.chat-history-item').forEach(item => {
+            item.classList.toggle('active', item.dataset.sessionId === sessionId);
+        });
+    }
+
+    // Enhanced Speech Recognition
+    let recognition = null;
+    let isListening = false;
+
+    function initializeSpeechRecognition() {
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = true;
+            recognition.lang = 'en-US';
+
+            recognition.onstart = function() {
+                isListening = true;
+                if (micButton) {
+                    micButton.classList.add('listening');
+                    micButton.innerHTML = '<i class="fas fa-stop"></i>';
+                    micButton.title = 'Stop listening';
+                }
+            };
+
+            recognition.onresult = function(event) {
+                let transcript = '';
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    if (event.results[i].isFinal) {
+                        transcript += event.results[i][0].transcript;
+                    }
+                }
+
+                if (messageInput && transcript) {
+                    messageInput.value = transcript;
+                    messageInput.focus();
+                    // Auto resize textarea
+                    messageInput.style.height = 'auto';
+                    messageInput.style.height = messageInput.scrollHeight + 'px';
+                }
+            };
+
+            recognition.onerror = function(event) {
+                console.error('Speech recognition error:', event.error);
+                stopListening();
+                showErrorMessage('Speech recognition failed. Please try again or type your message.');
+            };
+
+            recognition.onend = function() {
+                stopListening();
+            };
+        }
+    }
+
+    function startListening() {
+        if (recognition && !isListening) {
+            try {
+                recognition.start();
+            } catch (error) {
+                console.error('Error starting speech recognition:', error);
+                showErrorMessage('Could not start voice input. Please try again.');
+            }
+        }
+    }
+
+    function stopListening() {
+        isListening = false;
+        if (micButton) {
+            micButton.classList.remove('listening');
+            micButton.innerHTML = '<i class="fas fa-microphone"></i>';
+            micButton.title = 'Voice Input';
+        }
+        if (recognition) {
+            recognition.stop();
+        }
+    }
+
+    function toggleListening() {
+        if (!recognition) {
+            showErrorMessage('Speech recognition is not supported in your browser. Please use Chrome, Safari, or Edge.');
+            return;
+        }
+
+        if (isListening) {
+            stopListening();
+        } else {
+            startListening();
+        }
+    }
+
+    // Initialize speech recognition
+    initializeSpeechRecognition();
+
+    // Add event listener for microphone button
+    if (micButton) {
+        micButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            // Add visual feedback
+            this.style.transform = 'scale(0.9)';
+            setTimeout(() => {
+                this.style.transform = 'scale(1)';
+            }, 150);
+            toggleListening();
         });
     }
 
     function handleChatSubmit(event) {
         event.preventDefault();
 
-        const messageInput = document.getElementById('messageInput');
-        const sendButton = document.getElementById('sendButton');
         const message = messageInput.value.trim();
-
         if (!message) return;
 
-        // Disable input and button while processing
+        // Show loading state
+        showLoadingState();
         messageInput.disabled = true;
-        sendButton.disabled = true;
-        sendButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
 
         // Add user message to chat
         addMessageToChat('user', message);
 
         // Clear input
         messageInput.value = '';
+        messageInput.style.height = 'auto';
 
         // Send message to server
+        const newsRegionSelect = document.getElementById('newsRegion');
+        const newsRegion = newsRegionSelect ? newsRegionSelect.value : 'global';
+
         fetch('/chat', {
             method: 'POST',
             headers: {
@@ -204,10 +422,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 'Accept': 'application/json',
                 'X-Requested-With': 'XMLHttpRequest'
             },
-            credentials: 'same-origin',  // Important for session cookies
+            credentials: 'same-origin',
             body: JSON.stringify({ 
                 message: message,
-                session_id: currentSessionId
+                session_id: currentSessionId,
+                news_region: newsRegion
             })
         })
         .then(response => {
@@ -220,71 +439,179 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(data => {
             if (data.response) {
-                addMessageToChat('assistant', data.response);
-                // Reload chat history to show updated list
-                loadChatHistory();
+                setTimeout(() => {
+                    addMessageToChat('assistant', data.response);
+                    loadChatHistory();
+                    // Ensure we scroll to the latest message
+                    setTimeout(() => scrollToBottom(), 300);
+                }, 500); // Slight delay for better UX
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            addMessageToChat('error', error.message || 'An error occurred while processing your message.');
+            showErrorMessage(error.message || 'An error occurred while processing your message.');
             if (error.message.includes('not authenticated')) {
-                // Redirect to login if session expired
-                window.location.href = '/login';
+                setTimeout(() => {
+                    window.location.href = '/login';
+                }, 2000);
             }
         })
         .finally(() => {
             // Re-enable input and button
+            hideLoadingState();
             messageInput.disabled = false;
-            sendButton.disabled = false;
-            sendButton.innerHTML = '<i class="fas fa-paper-plane"></i>';
             messageInput.focus();
         });
     }
 
     function addMessageToChat(role, content) {
-        const chatMessages = document.getElementById('chatMessages');
         const messageDiv = document.createElement('div');
-        messageDiv.className = `message ${role}-message`;
+        messageDiv.className = `message ${role}-message animate-slide-in`;
 
         const messageContent = document.createElement('div');
         messageContent.className = 'message-content';
-        
+
         const timestamp = new Date().toLocaleTimeString();
-        
+        const currentTime = new Date().toLocaleDateString();
+
+        let iconClass, senderName;
         if (role === 'user') {
-            messageContent.innerHTML = `
-                <div class="message-header">
-                    <i class="fas fa-user"></i>
-                    <span>You</span>
-                    <span class="message-time">${timestamp}</span>
-                </div>
-                <div class="message-text">${content}</div>
-            `;
+            iconClass = 'fas fa-user-astronaut';
+            senderName = 'You';
         } else if (role === 'assistant') {
-            messageContent.innerHTML = `
-                <div class="message-header">
-                    <i class="fas fa-robot"></i>
-                    <span>News Agent</span>
-                    <span class="message-time">${timestamp}</span>
-                </div>
-                <div class="message-text">${content}</div>
-            `;
+            iconClass = 'fas fa-robot';
+            senderName = 'News Agent';
         } else if (role === 'error') {
-            messageContent.innerHTML = `
-                <div class="message-header error">
-                    <i class="fas fa-exclamation-circle"></i>
-                    <span>Error</span>
-                    <span class="message-time">${timestamp}</span>
-                </div>
-                <div class="message-text error">${content}</div>
-            `;
+            iconClass = 'fas fa-exclamation-triangle';
+            senderName = 'System Error';
         }
+
+        messageContent.innerHTML = `
+            <div class="message-header">
+                <i class="${iconClass}"></i>
+                <span class="message-sender">${senderName}</span>
+                <span class="message-time">${timestamp}</span>
+            </div>
+            <div class="message-text">${content}</div>
+        `;
 
         messageDiv.appendChild(messageContent);
         chatMessages.appendChild(messageDiv);
 
-        // Scroll to bottom
-        chatMessages.scrollTop = chatMessages.scrollHeight;
+        // Auto-scroll to bottom with smooth animation
+        scrollToBottom();
     }
-}); 
+
+    function scrollToBottom() {
+        chatMessages.scrollTo({
+            top: chatMessages.scrollHeight,
+            behavior: 'smooth'
+        });
+    }
+
+    function displayChatHistory(history) {
+        if (history && history.length > 0) {
+            chatHistory.innerHTML = history.map(chat => {
+                const firstUserMessage = chat.messages.find(msg => msg.role === 'user');
+                const preview = firstUserMessage ? firstUserMessage.content : 'New Conversation';
+                const date = new Date(chat.created_at).toLocaleDateString();
+                const time = new Date(chat.last_updated).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                const isActive = chat.session_id === localStorage.getItem('currentSessionId');
+
+                return `
+                    <div class="chat-history-item ${isActive ? 'active' : ''} animate-slide-in" data-session-id="${chat.session_id}">
+                        <div class="chat-history-preview">${preview.substring(0, 60)}${preview.length > 60 ? '...' : ''}</div>
+                        <div class="chat-history-date">
+                            <i class="fas fa-clock"></i>
+                            ${date} • ${time}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // Add click listeners with enhanced feedback
+            document.querySelectorAll('.chat-history-item').forEach(item => {
+                item.addEventListener('click', function () {
+                    // Visual feedback
+                    this.style.transform = 'scale(0.98)';
+                    setTimeout(() => {
+                        this.style.transform = 'scale(1)';
+                    }, 150);
+
+                    const sessionId = this.dataset.sessionId;
+                    loadChatSession(sessionId);
+                });
+            });
+        } else {
+            chatHistory.innerHTML = `
+                <div class="no-history animate-fade-in">
+                    <i class="fas fa-comment-dots" style="font-size: 2rem; margin-bottom: 1rem; color: var(--accent-cyan);"></i>
+                    <p>No conversations yet</p>
+                    <p style="font-size: 0.875rem; margin-top: 0.5rem;">Start chatting to see your history here!</p>
+                </div>
+            `;
+        }
+    }
+
+    // Enhanced keyboard shortcuts
+    document.addEventListener('keydown', function(e) {
+        // Ctrl/Cmd + Enter to send message
+        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+            e.preventDefault();
+            if (messageInput.value.trim()) {
+                handleChatSubmit(e);
+            }
+        }
+
+        // Escape to stop voice input
+        if (e.key === 'Escape' && isListening) {
+            stopListening();
+        }
+    });
+
+    // Auto-focus message input when page loads
+    if (messageInput) {
+        messageInput.focus();
+    }
+
+    // Create an observer to auto-scroll when new content is added
+    const chatObserver = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+                // Check if a message was added
+                const hasNewMessage = Array.from(mutation.addedNodes).some(node => 
+                    node.nodeType === Node.ELEMENT_NODE && node.classList && node.classList.contains('message')
+                );
+                if (hasNewMessage) {
+                    setTimeout(() => scrollToBottom(), 100);
+                }
+            }
+        });
+    });
+
+    // Start observing the chat messages container
+    if (chatMessages) {
+        chatObserver.observe(chatMessages, {
+            childList: true,
+            subtree: true
+        });
+    }
+
+    // Handle news region change
+    document.getElementById('newsRegion').addEventListener('change', function() {
+        // Update welcome message when region changes
+        if (document.querySelector('.welcome-message')) {
+            showWelcomeMessage();
+        }
+        // Save selection
+        localStorage.setItem('newsRegion', this.value);
+    });
+
+    // Initialize news region dropdown
+    const newsRegionSelect = document.getElementById('newsRegion');
+    if (newsRegionSelect) {
+        // Restore saved region or default to global
+        const savedRegion = localStorage.getItem('newsRegion') || 'global';
+        newsRegionSelect.value = savedRegion;
+    }
+});
