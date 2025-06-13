@@ -1,3 +1,31 @@
 {
-  "2c1264a8-1505-417b-964f-3dbfc29198da": []
+  "2c1264a8-1505-417b-964f-3dbfc29198da": [
+    {
+      "session_id": "c97ef57f-218d-48e9-8d01-e56453b1f381",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Show me the latest news headlines",
+          "timestamp": "2025-06-14T01:00:36.367821"
+        },
+        {
+          "role": "assistant",
+          "content": "I'm sorry, but I couldn't find any specific news headlines to share with you at the moment. If you have any other news-related questions or topics you'd like to discuss, feel free to let me know!",
+          "timestamp": "2025-06-14T01:00:46.534080"
+        },
+        {
+          "role": "user",
+          "content": "tell me about ahmedabad plan crash",
+          "timestamp": "2025-06-14T01:01:32.177408"
+        },
+        {
+          "role": "assistant",
+          "content": "I'm sorry, but there seems to be a misunderstanding. As an AI News Companion, I don't have real-time access to external sources or live updates. However, if you provide me with details or context about the Ahmedabad plane crash, I can help discuss the general topic or provide information based on the data available to me. Let me know how I can assist you further!",
+          "timestamp": "2025-06-14T01:01:39.146140"
+        }
+      ],
+      "created_at": "2025-06-14T01:00:46.534116",
+      "last_updated": "2025-06-14T01:01:39.146154"
+    }
+  ]
 }

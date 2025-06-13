@@ -2,13 +2,8 @@
     "version": 2,
     "builds": [
         {
-            "src": "api/index.py",
-            "use": "@vercel/python",
-            "config": {
-                "maxLambdaSize": "250mb",
-                "runtime": "python3.9",
-                "installCommand": "pip install -r requirements-vercel.txt"
-            }
+            "src": "app.py",
+            "use": "@vercel/python"
         },
         {
             "src": "static/**",
@@ -22,7 +17,10 @@
         },
         {
             "src": "/(.*)",
-            "dest": "api/index.py"
+            "dest": "app.py"
         }
-    ]
+    ],
+    "env": {
+        "FLASK_ENV": "production"
+    }
 } 

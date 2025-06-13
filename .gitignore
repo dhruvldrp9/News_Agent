@@ -83,4 +83,12 @@ var/
 wheels/
 *.egg-info/
 .installed.cfg
-*.egg 
+*.egg
+
+# Vercel
+.vercel
+.now
+
+# Vercel-specific entries
+.vercel
+.now 

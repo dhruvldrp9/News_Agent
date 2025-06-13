@@ -14,7 +14,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', secrets.token_hex(32))
-app.config['SESSION_COOKIE_SECURE'] = True  # Always use secure cookies in production
+app.config['SESSION_COOKIE_SECURE'] = os.environ.get('FLASK_ENV') == 'production'
 app.config['SESSION_COOKIE_HTTPONLY'] = True
 app.config['SESSION_COOKIE_SAMESITE'] = 'Strict'
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=24)
@@ -31,10 +31,9 @@ conversation_sessions = {}
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 
-# Use environment variables for file paths to support Vercel's serverless environment
-CHAT_HISTORIES_FILE = os.environ.get('CHAT_HISTORIES_FILE', 'data/chat_histories.json')
-USER_USAGE_FILE = os.environ.get('USER_USAGE_FILE', 'data/user_usage.json')
-MAX_QUERIES_PER_USER = int(os.environ.get('MAX_QUERIES_PER_USER', '10'))
+CHAT_HISTORIES_FILE = 'data/chat_histories.json'
+USER_USAGE_FILE = 'data/user_usage.json'
+MAX_QUERIES_PER_USER = 10
 
 def login_required(f):
     @wraps(f)
@@ -525,6 +524,4 @@ def speak():
         return jsonify({'error': 'Error generating audio'}), 500
 
 if __name__ == '__main__':
-    debug_mode = os.environ.get('FLASK_DEBUG', 'False').lower() == 'true'
-    port = int(os.environ.get('PORT', 5001))
-    app.run(host='0.0.0.0', port=port, debug=debug_mode)
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8080)))
