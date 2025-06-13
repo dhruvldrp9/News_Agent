@@ -3,10 +3,8 @@ bs4==0.0.2
 certifi==2024.12.14
 chardet==5.2.0
 elevenlabs==1.50.5
-en_core_web_sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl#sha256=1932429db727d4bff3deed6b34cfc05df17794f4a52eeb26cf8928f7c1a0fb85
 Flask==3.1.0
 google_search_results==2.4.2
 nltk==3.9.1
 requests==2.32.3
 serpapi==0.1.5
-spacy

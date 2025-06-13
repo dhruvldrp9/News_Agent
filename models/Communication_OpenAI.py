@@ -145,7 +145,7 @@ class GPTConversationSystem:
         search = GoogleSearch(params)
         results = search.get_dict()
         result_list = ''
-        for i in results['organic_results'][:5]:
+        for i in results['organic_results'][:2]:
             try:
                 text = self.scrapper.scrape(i['link'])
                 result_list += text
@@ -187,7 +187,7 @@ class GPTConversationSystem:
                 model="gpt-3.5-turbo",
                 messages=self.conversation_history,
                 temperature=0.7,
-                max_tokens=1000,
+                max_tokens=4000,
                 top_p=1,
                 stream=False,
             )

@@ -1,31 +1,109 @@
 {
   "2c1264a8-1505-417b-964f-3dbfc29198da": [
     {
-      "session_id": "c97ef57f-218d-48e9-8d01-e56453b1f381",
+      "session_id": "4b46430b-fde3-4298-affe-61d4ad8f6ece",
       "messages": [
         {
           "role": "user",
           "content": "Show me the latest news headlines",
-          "timestamp": "2025-06-14T01:00:36.367821"
+          "timestamp": "2025-06-14T01:46:19.736737"
         },
         {
           "role": "assistant",
-          "content": "I'm sorry, but I couldn't find any specific news headlines to share with you at the moment. If you have any other news-related questions or topics you'd like to discuss, feel free to let me know!",
-          "timestamp": "2025-06-14T01:00:46.534080"
+          "content": "I'm here to assist you with the latest news headlines. What specific topic are you interested in today? Feel free to let me know so I can provide you with the most up-to-date information.",
+          "timestamp": "2025-06-14T01:46:24.199894"
+        }
+      ],
+      "created_at": "2025-06-14T01:46:24.199908",
+      "last_updated": "2025-06-14T01:46:24.199908"
+    },
+    {
+      "session_id": "e9c9063f-4776-40ae-80b8-683a5a79a9b0",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Show me the latest news headlines",
+          "timestamp": "2025-06-14T01:47:24.785392"
+        },
+        {
+          "role": "assistant",
+          "content": "I'm sorry, but I couldn't find any specific news headlines to share at the moment. If you have any other questions or topics you'd like to discuss, feel free to let me know! Remember, I'm here to chat about the latest news and events.",
+          "timestamp": "2025-06-14T01:47:28.801204"
+        }
+      ],
+      "created_at": "2025-06-14T01:47:28.801236",
+      "last_updated": "2025-06-14T01:47:28.801236"
+    },
+    {
+      "session_id": "6cc27634-ddd5-4915-b185-7da14826e4ec",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Show me the latest news headlines",
+          "timestamp": "2025-06-14T01:48:32.006192"
+        },
+        {
+          "role": "assistant",
+          "content": "I'm here to help with the latest news headlines! However, based on the available data, there are currently no specific news headlines provided to discuss. If you have any other questions or topics you'd like to learn about, feel free to let me know!",
+          "timestamp": "2025-06-14T01:48:38.187220"
         },
         {
           "role": "user",
-          "content": "tell me about ahmedabad plan crash",
-          "timestamp": "2025-06-14T01:01:32.177408"
+          "content": "tell me about ahmedabad plane crash",
+          "timestamp": "2025-06-14T01:48:49.399128"
         },
         {
           "role": "assistant",
-          "content": "I'm sorry, but there seems to be a misunderstanding. As an AI News Companion, I don't have real-time access to external sources or live updates. However, if you provide me with details or context about the Ahmedabad plane crash, I can help discuss the general topic or provide information based on the data available to me. Let me know how I can assist you further!",
-          "timestamp": "2025-06-14T01:01:39.146140"
+          "content": "I'm here to provide information about the Ahmedabad plane crash. However, based on the available data, there are no specific details or news articles provided about an incident involving a plane crash in Ahmedabad. If you have any other questions or topics you'd like to explore, please feel free to ask!",
+          "timestamp": "2025-06-14T01:48:54.461261"
         }
       ],
-      "created_at": "2025-06-14T01:00:46.534116",
-      "last_updated": "2025-06-14T01:01:39.146154"
+      "created_at": "2025-06-14T01:48:38.187236",
+      "last_updated": "2025-06-14T01:48:54.461321"
+    },
+    {
+      "session_id": "3856dc5b-5af6-4f69-b473-57c9a2a42fbf",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Show me the latest news headlines",
+          "timestamp": "2025-06-14T01:51:07.255423"
+        },
+        {
+          "role": "assistant",
+          "content": "I'm here to help you with the latest news headlines. What topic are you interested in today?",
+          "timestamp": "2025-06-14T01:51:09.433912"
+        }
+      ],
+      "created_at": "2025-06-14T01:51:09.433927",
+      "last_updated": "2025-06-14T01:51:09.433927"
+    },
+    {
+      "session_id": "f1be69a9-f10a-45d6-92c7-067c914a3168",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Show me the latest news headlines",
+          "timestamp": "2025-06-14T01:51:51.175054"
+        },
+        {
+          "role": "assistant",
+          "content": "I'm sorry, but I couldn't find any specific news headlines to share with you at the moment. If you have any other questions or topics you'd like to discuss, feel free to let me know!",
+          "timestamp": "2025-06-14T01:51:53.178990"
+        },
+        {
+          "role": "user",
+          "content": "ahmedabad crash plane",
+          "timestamp": "2025-06-14T01:52:03.710784"
+        },
+        {
+          "role": "assistant",
+          "content": "I'm sorry, but without specific information available on the Ahmedabad crash involving a plane, I'm unable to provide any details on this incident. If you have any other questions or topics you'd like to explore, feel free to share!",
+          "timestamp": "2025-06-14T01:52:12.631296"
+        }
+      ],
+      "created_at": "2025-06-14T01:51:53.179013",
+      "last_updated": "2025-06-14T01:52:12.631313"
     }
   ]
 }
