@@ -1,4 +1,3 @@
-
 from flask import Flask, render_template, request, jsonify, redirect, url_for, session
 import os
 import json
@@ -15,12 +14,11 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', secrets.token_hex(32))
-app.config['SESSION_COOKIE_SECURE'] = os.environ.get('FLASK_ENV') == 'production'
+app.config['SESSION_COOKIE_SECURE'] = True  # Always use secure cookies in production
 app.config['SESSION_COOKIE_HTTPONLY'] = True
 app.config['SESSION_COOKIE_SAMESITE'] = 'Strict'
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=24)
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max upload
-app.config['SERVER_NAME'] = os.environ.get('DOMAIN', None)
 
 # Initialize API clients
 from openai import OpenAI
@@ -33,9 +31,10 @@ conversation_sessions = {}
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 
-CHAT_HISTORIES_FILE = 'data/chat_histories.json'
-USER_USAGE_FILE = 'data/user_usage.json'
-MAX_QUERIES_PER_USER = 10
+# Use environment variables for file paths to support Vercel's serverless environment
+CHAT_HISTORIES_FILE = os.environ.get('CHAT_HISTORIES_FILE', 'data/chat_histories.json')
+USER_USAGE_FILE = os.environ.get('USER_USAGE_FILE', 'data/user_usage.json')
+MAX_QUERIES_PER_USER = int(os.environ.get('MAX_QUERIES_PER_USER', '10'))
 
 def login_required(f):
     @wraps(f)
