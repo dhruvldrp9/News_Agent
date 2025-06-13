@@ -1,7 +1,7 @@
 import os
 import time
 from openai import OpenAI
-from serpapi import GoogleSearch
+from serpapi.google_search import GoogleSearch
 from models.WebScrapper1 import WebScraper
 from models.summarizer import TextSummarizer
 from elevenlabs import ElevenLabs
