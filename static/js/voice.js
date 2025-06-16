@@ -146,12 +146,12 @@ document.addEventListener('DOMContentLoaded', function() {
         } catch (error) {
             console.error('Error processing voice input:', error);
             isProcessing = false;
-            
+
             // Continue listening even after errors
             updateStatus('Listening...', 'Error processed, ready for next question');
             transcriptText.textContent = 'Listening...';
             responseText.textContent = 'Sorry, I encountered an error processing your request.';
-            
+
             // Start listening again automatically
             if (recognition && !isListening) {
                 recognition.start();
@@ -186,51 +186,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const data = await response.json();
 
-            if (data.success && data.audio_url) {
-                // Clear any existing audio source
-                ttsAudio.src = '';
-
-                // Set new audio source with cache busting
-                const audioUrl = data.audio_url + '?t=' + Date.now();
-                ttsAudio.src = audioUrl;
-
-                ttsAudio.onloadeddata = function() {
-                    console.log('Audio loaded successfully');
-                };
-
-                ttsAudio.onended = function() {
-                    isSpeaking = false;
-                    isProcessing = false;
-                    
-                    // Continue listening automatically instead of resetting
-                    updateStatus('Listening...', 'Ready for your next question');
-                    transcriptText.textContent = 'Listening...';
-                    responseText.textContent = '';
-                    
-                    // Start listening again automatically
-                    if (recognition && !isListening) {
-                        recognition.start();
-                    }
-                };
-
-                ttsAudio.onerror = function(e) {
-                    console.error('Audio playback error:', e);
-                    isSpeaking = false;
-                    isProcessing = false;
-                    
-                    // Continue listening even if audio fails
-                    updateStatus('Listening...', 'Audio error, but ready for next question');
-                    transcriptText.textContent = 'Listening...';
-                    
-                    // Start listening again automatically
-                    if (recognition && !isListening) {
-                        recognition.start();
-                    }
-                };
-
-                // Load and play the audio
-                ttsAudio.load();
-                await ttsAudio.play();
+            if (data.success && (data.audio_url || data.audio_data)) {
+                // Play the audio
+                const audio = document.getElementById('ttsAudio');
+                audio.src = data.audio_url || data.audio_data;
+                audio.play().catch(e => {
+                    console.error('Error playing audio:', e);
+                    updateVoiceStatus('Error playing audio response', 'Try again');
+                });
             } else {
                 throw new Error('No audio URL received from server');
             }
@@ -239,11 +202,11 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Error with text-to-speech:', error);
             isSpeaking = false;
             isProcessing = false;
-            
+
             // Continue listening even if TTS fails
             updateStatus('Listening...', 'TTS error, but ready for next question');
             transcriptText.textContent = 'Listening...';
-            
+
             // Start listening again automatically
             if (recognition && !isListening) {
                 recognition.start();

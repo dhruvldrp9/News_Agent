@@ -1,136 +1,140 @@
 
 # Deployment Guide - News Agent
 
-This guide explains how to deploy News Agent to production using Vercel or Replit.
+This guide explains how to deploy News Agent on Vercel.
 
 ## Prerequisites
 
-1. **GitHub Account**: Ensure you have a GitHub account
+1. **GitHub Account**: Your code repository
 2. **Vercel Account**: Create a free Vercel account
 3. **API Keys**: Have all required API keys ready:
    - OpenAI API Key
    - SerpAPI Key (Google Search)
    - ElevenLabs API Key
+   - Supabase credentials
 
 ## Environment Variables
 
-Set up the following environment variables:
+Set up the following environment variables in Vercel:
 
 ```env
 OPENAI_API_KEY=your_openai_api_key_here
 GOOGLE_NEWS_API_KEY=your_serpapi_key_here
 ELEVENLABS_API_KEY=your_elevenlabs_api_key_here
+SUPABASE_URL=your_supabase_url_here
+SUPABASE_ANON_KEY=your_supabase_anon_key_here
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key_here
 SECRET_KEY=your_secure_secret_key_here
 ```
 
-## Deployment Options
+## Deploy to Vercel
 
-### Option 1: Deploy to Vercel (Recommended)
+### Method 1: GitHub Integration
+1. Visit [Vercel](https://vercel.com/)
+2. Sign up or log in
+3. Click "New Project"
+4. Import from GitHub: `https://github.com/dhruvldrp9/NewsAgent`
+5. Configure environment variables
+6. Deploy
 
-#### Quick Deploy
-1. Click the "Deploy with Vercel" button in README
-2. Connect your GitHub account
-3. Set up environment variables in Vercel dashboard
-4. Deploy!
+### Method 2: Vercel CLI
+1. Install Vercel CLI: `npm i -g vercel`
+2. Clone repository locally
+3. Run `vercel` in project directory
+4. Follow the deployment prompts
+5. Set environment variables via dashboard
 
-#### Manual Deploy
-1. Fork/Clone this repository to your GitHub
-2. Push your changes to the main branch
-3. Connect repository to Vercel
-4. Configure environment variables
-5. Deploy
+## Vercel Environment Variables Setup
 
-#### Vercel Environment Variables Setup
-1. Go to Vercel Dashboard → Your Project → Settings → Environment Variables
-2. Add the following variables:
-   - `OPENAI_API_KEY`
-   - `GOOGLE_NEWS_API_KEY`
-   - `ELEVENLABS_API_KEY`
-   - `SECRET_KEY`
+1. Go to your Vercel dashboard
+2. Select your project
+3. Navigate to "Settings" → "Environment Variables"
+4. Add each environment variable:
+   - Name: Variable name (e.g., `OPENAI_API_KEY`)
+   - Value: Your actual API key
+   - Environment: Production, Preview, Development
+5. Save each variable
 
-### Option 2: Deploy to Replit
+## Supabase Database Setup
 
-1. Import the project from GitHub to Replit
-2. Configure environment variables in Replit Secrets
-3. Run the application using the Run button
-4. Set up custom domain (optional)
+1. Create a new Supabase project
+2. Run the following SQL to create required tables:
 
-## GitHub Setup
+```sql
+-- Users table
+CREATE TABLE users (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    name TEXT NOT NULL,
+    email TEXT UNIQUE NOT NULL,
+    password_hash TEXT NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    usage_count INTEGER DEFAULT 0
+);
 
-### 1. Create Repository
-```bash
-# Initialize git (if not already done)
-git init
+-- Chat sessions table
+CREATE TABLE chat_sessions (
+    session_id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    user_id UUID REFERENCES users(id),
+    title TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    last_updated TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
 
-# Add all files
-git add .
+-- Chat messages table
+CREATE TABLE chat_messages (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    session_id UUID REFERENCES chat_sessions(session_id),
+    role TEXT NOT NULL CHECK (role IN ('user', 'assistant')),
+    content TEXT NOT NULL,
+    timestamp TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
 
-# Commit changes
-git commit -m "Initial commit"
-
-# Add remote origin
-git remote add origin https://github.com/yourusername/News_Agent.git
-
-# Push to GitHub
-git push -u origin main
+-- Storage bucket for audio files
+INSERT INTO storage.buckets (id, name, public) VALUES ('audio-files', 'audio-files', true);
 ```
-
-### 2. GitHub Secrets (for Actions)
-If using GitHub Actions for deployment, add these secrets in GitHub:
-- `VERCEL_TOKEN`
-- `ORG_ID`
-- `PROJECT_ID`
-
-## Custom Domain Setup (Optional)
-
-### For Vercel
-1. Go to Vercel Dashboard → Your Project → Settings → Domains
-2. Add your custom domain
-3. Configure DNS records as instructed
-4. Wait for SSL certificate provisioning
-
-### For Replit
-1. Go to Deployments in Replit
-2. Click "Link a domain"
-3. Enter your domain
-4. Add DNS records to your domain registrar
 
 ## Production Checklist
 
-- [ ] All API keys configured
-- [ ] Environment variables set
-- [ ] Repository pushed to GitHub
-- [ ] Application deployed successfully
-- [ ] Custom domain configured (if applicable)
-- [ ] SSL certificate active
-- [ ] Application running without errors
+- [ ] All API keys configured in Vercel environment variables
+- [ ] Supabase database tables created
+- [ ] Storage bucket configured
+- [ ] Application deployed and running
 - [ ] Chat functionality working
 - [ ] Voice assistant working
 - [ ] User authentication working
+- [ ] Custom domain configured (if applicable)
 
 ## Monitoring
 
 Monitor your deployment:
-- Check deployment logs for errors
+- Check Vercel dashboard for build logs and runtime errors
 - Monitor API usage for all services
-- Track user analytics
-- Monitor domain uptime
+- Check Supabase dashboard for database activity
+- Set up Vercel analytics for performance monitoring
 
-## Security Notes
+## Troubleshooting
 
-- Never commit API keys to GitHub
-- Use environment variables for all secrets
-- Enable HTTPS-only access
-- Monitor for suspicious activities
-- Regularly rotate API keys
+Common issues:
+- **Build Errors**: Check Vercel build logs for Python or dependency issues
+- **API Key Errors**: Verify environment variables in Vercel dashboard
+- **Database Errors**: Verify Supabase connection and table setup
+- **Audio Issues**: Ensure ElevenLabs API key is valid and service role key is set
+- **Cold Start Issues**: First request after inactivity may be slower
+
+## Custom Domain
+
+To use a custom domain:
+1. Go to Vercel dashboard
+2. Select your project
+3. Navigate to "Settings" → "Domains"
+4. Add your domain and configure DNS
 
 ## Support
 
-For deployment issues:
-- Check platform documentation (Vercel/Replit)
-- Review application logs
-- Contact support: dhruv.ldrp9@gmail.com
+For deployment issues, contact: dhruv.ldrp9@gmail.com
 
----
+## Links
 
-**Live URL**: https://newsagent.dhruv.at
+- **Live Application**: [newsagent.dhruv.at](https://newsagent.dhruv.at)
+- **GitHub Repository**: [github.com/dhruvldrp9/NewsAgent](https://github.com/dhruvldrp9/NewsAgent)
+- **Developer LinkedIn**: [linkedin.com/in/dhruvp9](https://linkedin.com/in/dhruvp9)

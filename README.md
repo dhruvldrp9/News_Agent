@@ -2,14 +2,11 @@
 # News Agent - AI-Powered News Assistant
 
 [![Live Demo](https://img.shields.io/badge/Live-Demo-brightgreen?style=for-the-badge&logo=vercel)](https://newsagent.dhruv.at)
-[![GitHub](https://img.shields.io/badge/GitHub-Repository-blue?style=for-the-badge&logo=github)](https://github.com/dhruvldrp9/News_Agent)
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/dhruvldrp9/News_Agent)
+[![GitHub](https://img.shields.io/badge/GitHub-Repository-blue?style=for-the-badge&logo=github)](https://github.com/dhruvldrp9/NewsAgent)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](./LICENSE)
 
 ## 🌟 Overview
 News Agent is an intelligent AI-powered news assistant that provides real-time news updates and summaries. It combines the power of Google Search API, OpenAI's GPT models, and advanced text processing to deliver accurate and concise news information through both text and voice interfaces.
-
-🌐 **Live Demo**: [https://newsagent.dhruv.at](https://newsagent.dhruv.at)
 
 ## ✨ Features
 - **🔄 Real-Time News Updates**: Fetches latest news using Google Search API
@@ -19,7 +16,7 @@ News Agent is an intelligent AI-powered news assistant that provides real-time n
 - **🎤 Voice Assistant**: Complete voice interaction with speech recognition and synthesis
 - **🔊 Text-to-Speech**: Converts news summaries to speech using ElevenLabs
 - **📚 Multi-Source Aggregation**: Aggregates news from various reliable sources
-- **💾 Chat History**: Persistent conversation history for each user
+- **💾 Chat History**: Persistent conversation history using Supabase
 - **🔐 User Authentication**: Secure login and signup system
 - **📱 Responsive Design**: Works seamlessly on desktop and mobile devices
 
@@ -27,97 +24,57 @@ News Agent is an intelligent AI-powered news assistant that provides real-time n
 - **Backend**: Python 3.12, Flask
 - **AI/ML**: OpenAI GPT-3.5 Turbo, NLTK
 - **APIs**: Google Search API (SerpAPI), ElevenLabs Text-to-Speech
+- **Database**: Supabase (PostgreSQL)
 - **Frontend**: HTML5, CSS3, JavaScript (ES6+)
 - **Web Scraping**: BeautifulSoup4, Requests
-- **Deployment**: Vercel (Production), Replit (Development)
+- **Deployment**: Vercel
 
-## 🚀 Quick Deploy
+## 🚀 Quick Start
 
-### Deploy to Vercel (Recommended)
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/dhruvldrp9/News_Agent)
-
-1. Click the "Deploy with Vercel" button above
-2. Connect your GitHub account
-3. Set up environment variables in Vercel dashboard:
-   - `OPENAI_API_KEY`
-   - `GOOGLE_NEWS_API_KEY`
-   - `ELEVENLABS_API_KEY`
-   - `SECRET_KEY`
-4. Deploy!
-
-### Deploy to Replit
-1. Fork this repository
-2. Import to Replit from GitHub
-3. Set up environment variables in Replit Secrets
-4. Click Run!
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/dhruvldrp9/NewsAgent.git
+   cd NewsAgent
+   ```
+2. **Set up environment variables**:
+   - `OPENAI_API_KEY` - Your OpenAI API key
+   - `GOOGLE_NEWS_API_KEY` - Your SerpAPI key
+   - `ELEVENLABS_API_KEY` - Your ElevenLabs API key
+   - `SUPABASE_URL` - Your Supabase project URL
+   - `SUPABASE_ANON_KEY` - Your Supabase anon key
+   - `SUPABASE_SERVICE_ROLE_KEY` - Your Supabase service role key
+   - `SECRET_KEY` - A secure secret key for sessions
+3. **Deploy to Vercel** or run locally with `python app.py`
 
 ## 📋 Prerequisites
-- Python 3.8 or higher
 - API keys for:
   - OpenAI (GPT API)
   - SerpAPI (Google Search)
   - ElevenLabs (Text-to-Speech)
-
-## 🚀 Local Installation
-
-### 1. Clone the Repository
-```bash
-git clone https://github.com/dhruvldrp9/News_Agent.git
-cd News_Agent
-```
-
-### 2. Install Dependencies
-```bash
-pip install -r requirements.txt
-```
-
-### 3. Set Up Environment Variables
-Create a `.env` file in the root directory:
-```bash
-cp env.example .env
-```
-
-Edit the `.env` file with your API keys:
-```env
-SECRET_KEY=your_secret_key_here
-FLASK_ENV=production
-OPENAI_API_KEY=your_openai_api_key_here
-GOOGLE_NEWS_API_KEY=your_serpapi_key_here
-ELEVENLABS_API_KEY=your_elevenlabs_api_key_here
-DOMAIN=localhost:5000
-PORT=5000
-```
-
-### 4. Create Required Directories
-```bash
-mkdir -p data static/audio
-```
-
-### 5. Run the Application
-```bash
-python app.py
-```
+  - Supabase (Database)
 
 ## 🔑 API Keys Setup
 
 ### OpenAI API Key
 1. Visit [OpenAI Platform](https://platform.openai.com/)
-2. Sign up or log in to your account
-3. Navigate to API Keys section
-4. Create a new API key
-5. Copy the key to your `.env` file
+2. Create account and get API key
+3. Add to environment variables as `OPENAI_API_KEY`
 
 ### SerpAPI Key (Google Search)
 1. Visit [SerpAPI](https://serpapi.com/)
-2. Sign up for a free account (100 searches/month)
-3. Get your API key from the dashboard
-4. Copy the key to your `.env` file
+2. Sign up for free account (100 searches/month)
+3. Add to environment variables as `GOOGLE_NEWS_API_KEY`
 
 ### ElevenLabs API Key
 1. Visit [ElevenLabs](https://elevenlabs.io/)
-2. Sign up for an account
-3. Navigate to your profile settings
-4. Copy your API key to your `.env` file
+2. Sign up and get API key
+3. Add to environment variables as `ELEVENLABS_API_KEY`
+
+### Supabase Setup
+1. Visit [Supabase](https://supabase.com/)
+2. Create new project
+3. Get URL, anon key, and service role key
+4. Add to environment variables
 
 ## 🎯 Usage
 
@@ -135,72 +92,47 @@ python app.py
 
 ## 📁 Project Structure
 ```
-News_Agent/
+NewsAgent/
 ├── app.py                 # Main Flask application
 ├── models/
 │   ├── Communication_OpenAI.py  # Core AI communication logic
 │   ├── chat_model.py           # Chat model interface
 │   ├── WebScrapper1.py         # Web scraping utilities
+│   ├── database.py             # Supabase database interface
 │   └── summarizer.py           # Text summarization
-├── templates/
-│   ├── index.html             # Main chat interface
-│   ├── voice.html             # Voice assistant interface
-│   ├── login.html             # User login page
-│   └── signup.html            # User registration page
-├── static/
-│   ├── css/                   # Stylesheets
-│   ├── js/                    # JavaScript files
-│   └── audio/                 # Generated audio files
-├── data/                      # User data and chat histories
-├── requirements.txt           # Python dependencies
-├── vercel.json               # Vercel deployment config
-├── .env.example              # Environment variables template
-└── README.md                 # This file
+├── templates/              # HTML templates
+├── static/                # CSS, JS, and static assets
+├── requirements.txt       # Python dependencies
+└── env.example           # Environment variables template
 ```
+
+## 🚀 Deployment
+
+This application is deployed on Vercel. To deploy your own instance:
+
+1. Fork this repository
+2. Connect your GitHub account to Vercel
+3. Import the repository in Vercel
+4. Set up environment variables in Vercel dashboard
+5. Deploy automatically
 
 ## 🤝 Contributing
-We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
+We welcome contributions! Please follow these steps:
 
-### Development Setup
 1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/amazing-feature`
+2. Create a feature branch
 3. Make your changes and test thoroughly
-4. Commit your changes: `git commit -m 'Add amazing feature'`
-5. Push to the branch: `git push origin feature/amazing-feature`
-6. Open a Pull Request
-
-## 🐛 Troubleshooting
-
-### Common Issues
-1. **API Key Errors**: Ensure all API keys are correctly set in your `.env` file
-2. **Dependencies Issues**: Try reinstalling with `pip install -r requirements.txt --force-reinstall`
-3. **Audio Not Playing**: Check browser permissions for audio playback
-
-### Debug Mode
-To run in debug mode for development:
-```bash
-export FLASK_DEBUG=1
-python app.py
-```
+4. Submit a pull request
 
 ## 📄 License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgments
-- OpenAI for providing powerful AI models
-- ElevenLabs for text-to-speech capabilities
-- SerpAPI for Google Search integration
-- The open-source community for various libraries used
-
 ## 📞 Contact
 - **Developer**: Dhruv Patel
 - **Email**: dhruv.ldrp9@gmail.com
+- **LinkedIn**: [linkedin.com/in/dhruvp9](https://linkedin.com/in/dhruvp9)
 - **GitHub**: [@dhruvldrp9](https://github.com/dhruvldrp9)
-- **LinkedIn**: [Dhruv Patel](https://linkedin.com/in/dhruvp9)
-
-## 🌟 Star this Repository
-If you find this project helpful, please give it a star! ⭐
 
 ---
 
-**Live Demo**: [https://newsagent.dhruv.at](https://newsagent.dhruv.at)
+**Live Demo**: [newsagent.dhruv.at](https://newsagent.dhruv.at)

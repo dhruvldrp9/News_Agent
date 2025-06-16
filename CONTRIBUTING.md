@@ -1,10 +1,7 @@
+
 # Contributing to News Agent
 
-Thank you for your interest in contributing to News Agent! This document provides guidelines and instructions for contributing.
-
-## Code of Conduct
-
-By participating in this project, you agree to maintain a respectful and inclusive environment for everyone.
+Thank you for your interest in contributing to News Agent!
 
 ## How to Contribute
 
@@ -14,62 +11,54 @@ By participating in this project, you agree to maintain a respectful and inclusi
    git checkout -b feature/your-feature-name
    ```
 3. Make your changes
-4. Run tests (if applicable)
-5. Commit your changes:
+4. Commit your changes:
    ```bash
    git commit -m "Description of your changes"
    ```
-6. Push to your fork:
+5. Push to your fork:
    ```bash
    git push origin feature/your-feature-name
    ```
-7. Create a Pull Request
+6. Create a Pull Request
 
 ## Development Setup
 
-1. Clone your fork:
+1. Clone the repository:
    ```bash
-   git clone https://github.com/dhruv-ldrp9/News_Agent.git
-   cd News_Agent
+   git clone https://github.com/dhruvldrp9/NewsAgent.git
+   cd NewsAgent
    ```
+2. Set up environment variables
+3. Install dependencies: `pip install -r requirements.txt`
+4. Run the application: `python app.py`
 
-2. Create a virtual environment:
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
+## Code Style
 
-3. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-4. Copy environment file:
-   ```bash
-   cp env.example .env
-   ```
-
-5. Edit `.env` with your API keys
-
-## Pull Request Process
-
-1. Update the README.md with details of changes if needed
-2. Update the documentation if you're changing functionality
-3. The PR will be merged once you have the sign-off of at least one maintainer
-
-## Style Guide
-
-- Follow PEP 8 style guide for Python code
+- Follow PEP 8 for Python code
 - Use meaningful variable and function names
 - Add comments for complex logic
 - Write docstrings for functions and classes
 
 ## Testing
 
-- Write tests for new features
-- Ensure all tests pass before submitting a PR
-- Update tests if you're changing existing functionality
+- Test both text and voice features
+- Verify authentication functionality
+- Check news fetching and summarization
+- Test on different browsers and devices
+
+## Pull Request Process
+
+1. Update documentation if needed
+2. Ensure all functionality works properly
+3. Test both text and voice features
+4. Get approval from maintainers
 
 ## Questions?
 
-Feel free to open an issue or contact dhruv.ldrp9@gmail.com 
+Contact: dhruv.ldrp9@gmail.com
+
+## Links
+
+- **Live Application**: [newsagent.dhruv.at](https://newsagent.dhruv.at)
+- **GitHub Repository**: [github.com/dhruvldrp9/NewsAgent](https://github.com/dhruvldrp9/NewsAgent)
+- **Developer LinkedIn**: [linkedin.com/in/dhruvp9](https://linkedin.com/in/dhruvp9)

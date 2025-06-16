@@ -1,41 +1,40 @@
+
 # Code of Conduct
 
 ## Our Pledge
 
-We as members, contributors, and leaders pledge to make participation in our
-community a harassment-free experience for everyone, regardless of age, body
-size, visible or invisible disability, ethnicity, sex characteristics, gender
-identity and expression, level of experience, education, socio-economic status,
-nationality, personal appearance, race, religion, or sexual identity
-and orientation.
+We are committed to providing a welcoming and inclusive environment for everyone, regardless of background, identity, or experience level.
 
 ## Our Standards
 
-Examples of behavior that contributes to a positive environment for our
-community include:
+**Positive behavior includes:**
+- Being respectful and inclusive
+- Accepting constructive feedback
+- Focusing on what's best for the community
+- Showing empathy towards others
 
-* Demonstrating empathy and kindness toward other people
-* Being respectful of differing opinions, viewpoints, and experiences
-* Giving and gracefully accepting constructive feedback
-* Accepting responsibility and apologizing to those affected by our mistakes
-* Focusing on what is best for the overall community
-
-Examples of unacceptable behavior include:
-
-* The use of sexualized language or imagery, and sexual attention or advances
-* Trolling, insulting or derogatory comments, and personal or political attacks
-* Public or private harassment
-* Publishing others' private information without explicit permission
-* Other conduct which could reasonably be considered inappropriate
+**Unacceptable behavior includes:**
+- Harassment or discriminatory language
+- Personal attacks or insults
+- Spam or off-topic content
+- Any other unprofessional conduct
 
 ## Enforcement
 
-Instances of abusive, harassing, or otherwise unacceptable behavior may be
-reported to the community leaders responsible for enforcement at
-dhruv.ldrp9@gmail.com.
+Instances of unacceptable behavior may be reported to: dhruv.ldrp9@gmail.com
+
+All reports will be reviewed and investigated promptly and fairly.
+
+## Contact
+
+- **Email**: dhruv.ldrp9@gmail.com
+- **LinkedIn**: [linkedin.com/in/dhruvp9](https://linkedin.com/in/dhruvp9)
 
 ## Attribution
 
-This Code of Conduct is adapted from the [Contributor Covenant](https://www.contributor-covenant.org),
-version 2.0, available at
-https://www.contributor-covenant.org/version/2/0/code_of_conduct.html. 
+This Code of Conduct is adapted from the [Contributor Covenant](https://www.contributor-covenant.org/).
+
+## Links
+
+- **Live Application**: [newsagent.dhruv.at](https://newsagent.dhruv.at)
+- **GitHub Repository**: [github.com/dhruvldrp9/NewsAgent](https://github.com/dhruvldrp9/NewsAgent)

@@ -40,9 +40,8 @@ function handleSignup(event) {
     const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value;
     const confirmPassword = document.getElementById('confirmPassword').value;
-    const terms = document.getElementById('terms').checked;
 
-    if (!validateSignupForm(name, email, password, confirmPassword, terms)) {
+    if (!validateSignupForm(name, email, password, confirmPassword)) {
         return;
     }
 
@@ -74,7 +73,7 @@ function validateLoginForm(email, password) {
     return isValid;
 }
 
-function validateSignupForm(name, email, password, confirmPassword, terms) {
+function validateSignupForm(name, email, password, confirmPassword) {
     let isValid = true;
 
     if (!name) {
@@ -103,11 +102,6 @@ function validateSignupForm(name, email, password, confirmPassword, terms) {
         isValid = false;
     } else if (password !== confirmPassword) {
         showError('confirmPasswordError', 'Passwords do not match');
-        isValid = false;
-    }
-
-    if (!terms) {
-        showError('termsError', 'You must agree to the terms and conditions');
         isValid = false;
     }
 

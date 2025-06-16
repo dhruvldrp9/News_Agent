@@ -8,6 +8,7 @@ from datetime import datetime, timedelta
 import time
 from elevenlabs import ElevenLabs
 from models.chat_model import generate_response
+from models.database import SupabaseDB
 import logging
 import hashlib
 import secrets
@@ -27,6 +28,14 @@ from openai import OpenAI
 client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
 eleven_client = ElevenLabs(api_key=os.getenv('ELEVENLABS_API_KEY'))
 
+# Initialize Supabase database
+try:
+    db = SupabaseDB()
+    app.logger.info("Supabase database initialized successfully")
+except Exception as e:
+    app.logger.error(f"Failed to initialize Supabase database: {e}")
+    db = None
+
 # Store conversation sessions
 conversation_sessions = {}
 
@@ -45,82 +54,76 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
-def load_users():
-    try:
-        if os.path.exists('data/users.json'):
-            with open('data/users.json', 'r') as f:
-                data = json.load(f)
-                if isinstance(data, dict) and 'users' in data:
-                    return data['users']
-                return data if isinstance(data, list) else []
-        return []
-    except Exception as e:
-        app.logger.error(f"Error loading users: {str(e)}")
-        return []
+def get_user_by_email(email):
+    if db:
+        return db.get_user_by_email(email)
+    return None
 
-def save_users(users):
-    try:
-        os.makedirs('data', exist_ok=True)
-        with open('data/users.json', 'w') as f:
-            json.dump({'users': users}, f, indent=4)
-    except Exception as e:
-        app.logger.error(f"Error saving users: {str(e)}")
+def get_user_by_id(user_id):
+    if db:
+        return db.get_user_by_id(user_id)
+    return None
 
-def load_chat_histories():
-    try:
-        with open(CHAT_HISTORIES_FILE, 'r') as f:
-            return json.load(f)
-    except FileNotFoundError:
-        logging.warning('chat_histories.json not found. Creating a new one.')
-        with open(CHAT_HISTORIES_FILE, 'w') as f:
-            json.dump({}, f)
-        return {}
-    except json.JSONDecodeError:
-        logging.error('chat_histories.json is invalid. Resetting file.')
-        with open(CHAT_HISTORIES_FILE, 'w') as f:
-            json.dump({}, f)
-        return {}
-    except Exception as e:
-        logging.error(f'Unexpected error loading chat histories: {e}')
-        return {}
+def create_user(name, email, password_hash):
+    if db:
+        return db.create_user(name, email, password_hash)
+    return None
 
-def save_chat_histories(histories):
-    try:
-        os.makedirs('data', exist_ok=True)
-        with open(CHAT_HISTORIES_FILE, 'w') as f:
-            json.dump(histories, f, indent=2)
-        logging.info(f'Chat histories saved successfully. Total users: {len(histories)}')
-    except Exception as e:
-        logging.error(f'Error saving chat histories: {e}')
+def get_user_chat_sessions(user_id):
+    if db:
+        sessions = db.get_user_chat_sessions(user_id)
+        # Convert to format expected by frontend
+        formatted_sessions = []
+        for session in sessions:
+            messages = db.get_chat_messages(session['session_id'])
+            # Convert message format for frontend compatibility
+            formatted_messages = []
+            for msg in messages:
+                formatted_messages.append({
+                    'role': msg['role'],
+                    'content': msg['content'],
+                    'timestamp': msg['timestamp']
+                })
+            
+            formatted_sessions.append({
+                'session_id': session['session_id'],
+                'messages': formatted_messages,
+                'created_at': session['created_at'],
+                'last_updated': session['last_updated']
+            })
+        return formatted_sessions
+    return []
 
-def load_user_usage():
-    try:
-        if os.path.exists(USER_USAGE_FILE):
-            with open(USER_USAGE_FILE, 'r') as f:
-                return json.load(f)
-        return {}
-    except Exception as e:
-        logging.error(f'Error loading user usage: {e}')
-        return {}
+def create_chat_session(session_id, user_id):
+    if db:
+        return db.create_chat_session(session_id, user_id)
+    return None
 
-def save_user_usage(usage_data):
-    try:
-        os.makedirs('data', exist_ok=True)
-        with open(USER_USAGE_FILE, 'w') as f:
-            json.dump(usage_data, f, indent=2)
-    except Exception as e:
-        logging.error(f'Error saving user usage: {e}')
+def add_chat_message(session_id, role, content, timestamp):
+    if db:
+        return db.add_chat_message(session_id, role, content, timestamp)
+    return None
+
+def update_chat_session(session_id):
+    if db:
+        return db.update_chat_session(session_id)
+    return None
 
 def check_user_query_limit(user_id):
-    usage_data = load_user_usage()
-    user_queries = usage_data.get(user_id, 0)
-    return user_queries < MAX_QUERIES_PER_USER
+    if db:
+        user = db.get_user_by_id(user_id)
+        if user:
+            return user.get('queries_used', 0) < MAX_QUERIES_PER_USER
+    return False
 
 def increment_user_queries(user_id):
-    usage_data = load_user_usage()
-    usage_data[user_id] = usage_data.get(user_id, 0) + 1
-    save_user_usage(usage_data)
-    return usage_data[user_id]
+    if db:
+        user = db.get_user_by_id(user_id)
+        if user:
+            new_count = user.get('queries_used', 0) + 1
+            db.update_user_queries(user_id, new_count)
+            return new_count
+    return 0
 
 @app.route('/')
 def index():
@@ -146,21 +149,15 @@ def signup():
             if not all([name, email, password]):
                 return jsonify({'error': 'All fields are required'}), 400
 
-            users = load_users()
-            if any(user.get('email') == email for user in users):
+            existing_user = get_user_by_email(email)
+            if existing_user:
                 return jsonify({'error': 'Email already registered'}), 400
 
-            new_user = {
-                'id': str(uuid.uuid4()),
-                'name': name,
-                'email': email,
-                'password': generate_password_hash(password),
-                'created_at': datetime.now().isoformat(),
-                'queries_used': 0
-            }
-
-            users.append(new_user)
-            save_users(users)
+            password_hash = generate_password_hash(password)
+            new_user = create_user(name, email, password_hash)
+            
+            if not new_user:
+                return jsonify({'error': 'Failed to create user'}), 500
 
             return jsonify({'success': True}), 200
 
@@ -182,28 +179,10 @@ def login():
             if not email or not password:
                 return jsonify({'error': 'Please fill in all fields'}), 400
 
-            users = load_users()
-            user = None
-            for u in users:
-                if isinstance(u, dict) and u.get('email') == email:
-                    # Handle both old unhashed passwords and new hashed passwords
-                    if u.get('password') == password:  # Old unhashed password
-                        # Update to hashed password
-                        u['password'] = generate_password_hash(password)
-                        save_users(users)
-                        user = u
-                        break
-                    elif check_password_hash(u.get('password', ''), password):  # New hashed password
-                        user = u
-                        break
-
-            if not user:
+            user = get_user_by_email(email)
+            
+            if not user or not check_password_hash(user.get('password', ''), password):
                 return jsonify({'error': 'Invalid email or password'}), 401
-
-            # Ensure user has an ID, create one if missing
-            if 'id' not in user:
-                user['id'] = str(uuid.uuid4())
-                save_users(users)  # Save the updated user data
 
             # Set session data
             session.clear()  # Clear any existing session data
@@ -267,19 +246,23 @@ def chat():
                 'limit_exceeded': True
             }), 429
 
-        # Load chat histories
-        chat_histories = load_chat_histories()
-
-        # Initialize user's chat history if it doesn't exist
-        if user_id not in chat_histories:
-            chat_histories[user_id] = []
-
-        # Initialize session if it doesn't exist
+        # Initialize session if it doesn't exist or if it doesn't exist in database
         if not session_id:
             session_id = str(uuid.uuid4())
+            
+        # Check if session exists in database, if not create it
+        if db:
+            existing_messages = db.get_chat_messages(session_id)
+            if not existing_messages:
+                # Session doesn't exist in database, create it
+                create_chat_session(session_id, user_id)
+                existing_messages = []
+        else:
+            existing_messages = []
 
+        # Load conversation session
         if session_id not in conversation_sessions:
-            conversation_sessions[session_id] = []
+            conversation_sessions[session_id] = existing_messages
 
         # Add user message to conversation history
         conversation_sessions[session_id].append({
@@ -296,35 +279,20 @@ def chat():
             ai_response = generate_response(conversation_sessions[session_id], news_region)
 
             # Add AI response to conversation history
+            ai_timestamp = datetime.now().isoformat()
             conversation_sessions[session_id].append({
                 'role': 'assistant',
                 'content': ai_response,
-                'timestamp': datetime.now().isoformat()
+                'timestamp': ai_timestamp
             })
 
-            # Find existing session or create new one
-            existing_session = None
-            for i, chat in enumerate(chat_histories[user_id]):
-                if chat['session_id'] == session_id:
-                    existing_session = i
-                    break
-
-            current_time = datetime.now().isoformat()
-
-            if existing_session is not None:
-                # Update existing session
-                chat_histories[user_id][existing_session]['messages'] = conversation_sessions[session_id].copy()
-                chat_histories[user_id][existing_session]['last_updated'] = current_time
-            else:
-                # Create new session
-                chat_histories[user_id].append({
-                    'session_id': session_id,
-                    'messages': conversation_sessions[session_id].copy(),
-                    'created_at': current_time,
-                    'last_updated': current_time
-                })
-
-            save_chat_histories(chat_histories)
+            # Save both messages to database
+            user_message_time = conversation_sessions[session_id][-2]['timestamp']  # User message timestamp
+            add_chat_message(session_id, 'user', message, user_message_time)
+            add_chat_message(session_id, 'assistant', ai_response, ai_timestamp)
+            
+            # Update session timestamp
+            update_chat_session(session_id)
 
             # Increment user query count
             queries_used = increment_user_queries(user_id)
@@ -353,12 +321,7 @@ def get_chat_history():
             app.logger.error(f"No user_id in session: {session}")
             return jsonify({'error': 'User not authenticated'}), 401
 
-        chat_histories = load_chat_histories()
-        user_history = chat_histories.get(user_id, [])
-
-        # Sort history by last_updated in descending order
-        if user_history:
-            user_history.sort(key=lambda x: x.get('last_updated', ''), reverse=True)
+        user_history = get_user_chat_sessions(user_id)
 
         # Also restore conversation sessions from history
         for chat in user_history:
@@ -404,20 +367,18 @@ def clear_all_chats():
         if not user_id:
             return jsonify({'error': 'User not authenticated'}), 401
 
-        # Load chat histories
-        chat_histories = load_chat_histories()
-        
-        # Clear all chats for this user
-        if user_id in chat_histories:
-            # Also clear from conversation_sessions
-            user_sessions = [chat['session_id'] for chat in chat_histories[user_id]]
-            for session_id in user_sessions:
+        # Clear all chats for this user from database
+        if db:
+            user_sessions = db.get_user_chat_sessions(user_id)
+            
+            # Clear from conversation_sessions
+            for session in user_sessions:
+                session_id = session['session_id']
                 if session_id in conversation_sessions:
                     del conversation_sessions[session_id]
             
-            # Clear user's chat history
-            chat_histories[user_id] = []
-            save_chat_histories(chat_histories)
+            # Delete all user chats from database
+            db.delete_all_user_chats(user_id)
 
         app.logger.info(f"Cleared all chat history for user {user_id}")
 
@@ -443,21 +404,11 @@ def delete_specific_chat():
         if not session_id:
             return jsonify({'error': 'Session ID is required'}), 400
 
-        # Load chat histories
-        chat_histories = load_chat_histories()
-        
-        if user_id in chat_histories:
-            # Find and remove the specific chat session
-            original_length = len(chat_histories[user_id])
-            chat_histories[user_id] = [
-                chat for chat in chat_histories[user_id] 
-                if chat['session_id'] != session_id
-            ]
+        # Delete specific chat session from database
+        if db:
+            success = db.delete_chat_session(session_id, user_id)
             
-            if len(chat_histories[user_id]) < original_length:
-                # Save updated histories
-                save_chat_histories(chat_histories)
-                
+            if success:
                 # Also remove from conversation_sessions
                 if session_id in conversation_sessions:
                     del conversation_sessions[session_id]
@@ -469,9 +420,9 @@ def delete_specific_chat():
                     'message': 'Chat deleted successfully'
                 })
             else:
-                return jsonify({'error': 'Chat not found'}), 404
+                return jsonify({'error': 'Chat not found or failed to delete'}), 404
         else:
-            return jsonify({'error': 'No chat history found'}), 404
+            return jsonify({'error': 'Database not available'}), 500
 
     except Exception as e:
         app.logger.error(f"Error deleting specific chat: {str(e)}")
@@ -484,9 +435,13 @@ def speak():
         data = request.get_json()
         text = data.get('text', '')
         session_id = data.get('session_id', '')
+        user_id = session.get('user_id')
 
         if not text:
             return jsonify({'error': 'No text provided'}), 400
+
+        if not user_id:
+            return jsonify({'error': 'User not authenticated'}), 401
 
         # Get or create conversation session for TTS
         if session_id not in conversation_sessions:
@@ -507,19 +462,43 @@ def speak():
         if not audio_stream:
             return jsonify({'error': 'Failed to generate audio'}), 500
 
-        # Save audio file
-        audio_path = f"static/audio/response_{int(time.time())}.mp3"
-        os.makedirs(os.path.dirname(audio_path), exist_ok=True)
-        
-        # Write the audio stream to file
-        with open(audio_path, 'wb') as f:
-            for chunk in audio_stream:
-                f.write(chunk)
+        # Collect audio data from stream
+        audio_data = b''
+        for chunk in audio_stream:
+            audio_data += chunk
 
-        return jsonify({
-            'success': True,
-            'audio_url': f"/{audio_path}"
-        })
+        if not audio_data:
+            return jsonify({'error': 'No audio data generated'}), 500
+
+        # Generate unique filename
+        timestamp = int(time.time())
+        file_name = f"user_{user_id}/response_{timestamp}_{session_id[:8]}.mp3"
+
+        # Upload to Supabase Storage
+        if db and db.supabase_admin:
+            upload_result = db.upload_audio_file(file_name, audio_data)
+            
+            if upload_result:
+                # Get public URL for the uploaded file
+                audio_url = db.get_audio_file_url(file_name)
+                
+                if audio_url:
+                    return jsonify({
+                        'success': True,
+                        'audio_url': audio_url
+                    })
+                else:
+                    return jsonify({'error': 'Failed to get audio URL'}), 500
+            else:
+                return jsonify({'error': 'Failed to upload audio to storage'}), 500
+        else:
+            # Fallback: Return base64 encoded audio if storage is not available
+            import base64
+            audio_base64 = base64.b64encode(audio_data).decode('utf-8')
+            return jsonify({
+                'success': True,
+                'audio_data': f"data:audio/mpeg;base64,{audio_base64}"
+            })
 
     except Exception as e:
         app.logger.error(f"Text-to-speech error: {str(e)}")

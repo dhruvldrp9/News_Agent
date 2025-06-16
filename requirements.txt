@@ -10,3 +10,4 @@ serpapi==0.1.5
 python-dotenv
 openai
 werkzeug
+supabase
