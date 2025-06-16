@@ -252,7 +252,19 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             if (data && data.history) {
+                // Cache the history for faster loading
+                sessionStorage.setItem('chatHistory', JSON.stringify(data.history));
                 displayChatHistory(data.history);
+
+                // Load current session if it exists
+                if (currentSessionId) {
+                    const currentSession = data.history.find(chat => chat.session_id === currentSessionId);
+                    if (currentSession) {
+                        loadVoiceChatFromData(currentSession);
+                    }
+                }
+            } else {
+                displayChatHistory([]);
             }
         })
         .catch(error => {
@@ -339,9 +351,26 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // Initialize speech recognition and voice chat
+    function initializeVoiceChat() {
+        initializeSpeechRecognition();
+        loadChatHistory(); // Load chat history and potentially current session data
+    }
+
+
+    function loadVoiceChatFromData(sessionData) {
+        if (sessionData && sessionData.messages && sessionData.messages.length > 0) {
+            const lastMessage = sessionData.messages[sessionData.messages.length - 1];
+            if (lastMessage.role === 'user') {
+                transcriptText.textContent = lastMessage.content;
+            } else if (lastMessage.role === 'assistant') {
+                responseText.textContent = lastMessage.content;
+            }
+        }
+    }
+
     // Initialize everything
-    initializeSpeechRecognition();
-    loadChatHistory();
+    initializeVoiceChat();
 
     // Create session if none exists
     if (!currentSessionId) {

@@ -10,16 +10,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     let currentSessionId = localStorage.getItem('currentSessionId') || '';
 
-    // Create a new chat session if none exists
-    if (!currentSessionId) {
-        createNewChat();
-    } else {
-        // Load existing chat session
-        loadChatSession(currentSessionId);
-    }
-
-    // Load chat history on page load
-    loadChatHistory();
+    // Initialize with better error handling
+    initializeChat();
 
     if (chatForm) {
         chatForm.addEventListener('submit', handleChatSubmit);
@@ -78,6 +70,125 @@ document.addEventListener('DOMContentLoaded', function() {
                 clearAllChats();
             }
         });
+    }
+
+    async function initializeChat() {
+        try {
+            showLoadingState();
+            
+            // First, try to load chat history to check authentication
+            const historyResponse = await fetch('/chat/history', {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                credentials: 'same-origin'
+            });
+
+            if (!historyResponse.ok) {
+                if (historyResponse.status === 401) {
+                    window.location.href = '/login';
+                    return;
+                }
+                throw new Error('Failed to load chat history');
+            }
+
+            const historyData = await historyResponse.json();
+            
+            // Display chat history first
+            displayChatHistory(historyData.history || []);
+
+            // Handle current session
+            if (!currentSessionId) {
+                // Create new session only if no history exists
+                if (!historyData.history || historyData.history.length === 0) {
+                    await createNewChatSilent();
+                } else {
+                    // Use the most recent session if available
+                    const mostRecent = historyData.history[0];
+                    if (mostRecent) {
+                        currentSessionId = mostRecent.session_id;
+                        localStorage.setItem('currentSessionId', currentSessionId);
+                        loadChatSessionFromData(mostRecent);
+                    } else {
+                        await createNewChatSilent();
+                    }
+                }
+            } else {
+                // Load existing session from history data
+                const existingSession = historyData.history?.find(chat => chat.session_id === currentSessionId);
+                if (existingSession) {
+                    loadChatSessionFromData(existingSession);
+                } else {
+                    // Session doesn't exist, create new one
+                    await createNewChatSilent();
+                }
+            }
+        } catch (error) {
+            console.error('Error initializing chat:', error);
+            showErrorMessage('Failed to initialize chat. Please refresh the page.');
+        } finally {
+            hideLoadingState();
+        }
+    }
+
+    function loadChatSessionFromData(chatData) {
+        currentSessionId = chatData.session_id;
+        localStorage.setItem('currentSessionId', currentSessionId);
+        
+        // Clear current messages
+        chatMessages.innerHTML = '';
+        
+        if (chatData.messages && chatData.messages.length > 0) {
+            chatData.messages.forEach((message, index) => {
+                setTimeout(() => {
+                    addMessageToChat(message.role, message.content);
+                    if (index === chatData.messages.length - 1) {
+                        setTimeout(() => scrollToBottom(), 200);
+                    }
+                }, index * 50); // Faster staggered animation
+            });
+        } else {
+            showWelcomeMessage();
+        }
+        
+        // Update active state in sidebar
+        updateActiveChat(currentSessionId);
+    }
+
+    async function createNewChatSilent() {
+        try {
+            const response = await fetch('/chat/new', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                credentials: 'same-origin'
+            });
+
+            if (!response.ok) {
+                if (response.status === 401) {
+                    window.location.href = '/login';
+                    return;
+                }
+                throw new Error('Failed to create new chat');
+            }
+
+            const data = await response.json();
+            if (data && data.session_id) {
+                currentSessionId = data.session_id;
+                localStorage.setItem('currentSessionId', currentSessionId);
+                chatMessages.innerHTML = '';
+                showWelcomeMessage();
+                setTimeout(() => scrollToBottom(), 100);
+            }
+        } catch (error) {
+            console.error('Error creating new chat:', error);
+            showErrorMessage('Failed to create new chat. Please try again.');
+        }
     }
 
     function clearAllChats() {
@@ -559,9 +670,19 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(response => {
             if (!response.ok) {
-                return response.json().then(data => {
-                    throw new Error(data.error || 'An error occurred');
-                });
+                if (response.status === 401) {
+                    window.location.href = '/login';
+                    return Promise.reject(new Error('Authentication required'));
+                }
+                // Check if response is JSON
+                const contentType = response.headers.get('content-type');
+                if (contentType && contentType.includes('application/json')) {
+                    return response.json().then(data => {
+                        throw new Error(data.error || 'An error occurred');
+                    });
+                } else {
+                    throw new Error('Server returned unexpected response');
+                }
             }
             return response.json();
         })

@@ -1,4 +1,3 @@
-
 from flask import Flask, render_template, request, jsonify, redirect, url_for, session
 import os
 import json
@@ -84,7 +83,7 @@ def get_user_chat_sessions(user_id):
                     'content': msg['content'],
                     'timestamp': msg['timestamp']
                 })
-            
+
             formatted_sessions.append({
                 'session_id': session['session_id'],
                 'messages': formatted_messages,
@@ -155,7 +154,7 @@ def signup():
 
             password_hash = generate_password_hash(password)
             new_user = create_user(name, email, password_hash)
-            
+
             if not new_user:
                 return jsonify({'error': 'Failed to create user'}), 500
 
@@ -180,7 +179,7 @@ def login():
                 return jsonify({'error': 'Please fill in all fields'}), 400
 
             user = get_user_by_email(email)
-            
+
             if not user or not check_password_hash(user.get('password', ''), password):
                 return jsonify({'error': 'Invalid email or password'}), 401
 
@@ -236,8 +235,8 @@ def chat():
         app.logger.info(f"Request data: {data}")
 
         if not user_id:
-            app.logger.error("No user_id found in session")
-            return jsonify({'error': 'User not authenticated'}), 401
+            app.logger.error(f"No user_id in session: {session}")
+            return jsonify({'error': 'User not authenticated', 'redirect': '/login'}), 401
 
         # Check query limit
         if not check_user_query_limit(user_id):
@@ -249,7 +248,7 @@ def chat():
         # Initialize session if it doesn't exist or if it doesn't exist in database
         if not session_id:
             session_id = str(uuid.uuid4())
-            
+
         # Check if session exists in database, if not create it
         if db:
             existing_messages = db.get_chat_messages(session_id)
@@ -290,7 +289,7 @@ def chat():
             user_message_time = conversation_sessions[session_id][-2]['timestamp']  # User message timestamp
             add_chat_message(session_id, 'user', message, user_message_time)
             add_chat_message(session_id, 'assistant', ai_response, ai_timestamp)
-            
+
             # Update session timestamp
             update_chat_session(session_id)
 
@@ -370,13 +369,13 @@ def clear_all_chats():
         # Clear all chats for this user from database
         if db:
             user_sessions = db.get_user_chat_sessions(user_id)
-            
+
             # Clear from conversation_sessions
             for session in user_sessions:
                 session_id = session['session_id']
                 if session_id in conversation_sessions:
                     del conversation_sessions[session_id]
-            
+
             # Delete all user chats from database
             db.delete_all_user_chats(user_id)
 
@@ -400,21 +399,21 @@ def delete_specific_chat():
 
         data = request.get_json()
         session_id = data.get('session_id')
-        
+
         if not session_id:
             return jsonify({'error': 'Session ID is required'}), 400
 
         # Delete specific chat session from database
         if db:
             success = db.delete_chat_session(session_id, user_id)
-            
+
             if success:
                 # Also remove from conversation_sessions
                 if session_id in conversation_sessions:
                     del conversation_sessions[session_id]
-                
+
                 app.logger.info(f"Deleted chat session {session_id} for user {user_id}")
-                
+
                 return jsonify({
                     'success': True,
                     'message': 'Chat deleted successfully'
@@ -441,7 +440,8 @@ def speak():
             return jsonify({'error': 'No text provided'}), 400
 
         if not user_id:
-            return jsonify({'error': 'User not authenticated'}), 401
+            app.logger.error(f"No user_id in session: {session}")
+            return jsonify({'error': 'User not authenticated', 'redirect': '/login'}), 401
 
         # Get or create conversation session for TTS
         if session_id not in conversation_sessions:
@@ -449,16 +449,16 @@ def speak():
 
         # Use the Communication_OpenAI class for TTS
         from models.Communication_OpenAI import GPTConversationSystem
-        
+
         openai_api_key = os.getenv('OPENAI_API_KEY')
         if not openai_api_key:
             return jsonify({'error': 'OpenAI API key not configured'}), 500
 
         gpt_system = GPTConversationSystem(openai_api_key)
-        
+
         # Get audio stream from ElevenLabs
         audio_stream = gpt_system.text_to_speech_stream(text)
-        
+
         if not audio_stream:
             return jsonify({'error': 'Failed to generate audio'}), 500
 
@@ -477,11 +477,11 @@ def speak():
         # Upload to Supabase Storage
         if db and db.supabase_admin:
             upload_result = db.upload_audio_file(file_name, audio_data)
-            
+
             if upload_result:
                 # Get public URL for the uploaded file
                 audio_url = db.get_audio_file_url(file_name)
-                
+
                 if audio_url:
                     return jsonify({
                         'success': True,
