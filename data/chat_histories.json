@@ -224,21 +224,38 @@
       "last_updated": "2025-06-16T10:26:26.850656"
     },
     {
-      "session_id": "64aa271c-7df6-4bb0-800b-0b459349380e",
+      "session_id": "55ae4297-c425-40b6-b85e-aeac40659d1e",
       "messages": [
         {
           "role": "user",
-          "content": "Show me the latest news headlines",
-          "timestamp": "2025-06-16T15:58:24.798062"
+          "content": "what are the latest news?",
+          "timestamp": "2025-06-16T11:31:47.540895"
         },
         {
           "role": "assistant",
-          "content": "Breaking news this hour. \n\nIn Ukraine, Moscow has launched deadly strikes on Kharkiv, resulting in three casualties. Simultaneously, the US has declared its intention to cut military aid to Kyiv amid escalating tensions.\n\nMeanwhile, in Iran, lawmakers have been shot as the conflict with Israel intensifies. The region remains on edge as the situation unfolds.\n\nAnd in the United States, preparations are underway for President Trump's military parade, coinciding with a significant Army anniversary event.\n\nThat concludes tonight's news update.",
-          "timestamp": "2025-06-16T15:58:30.214122"
+          "content": "Breaking news this hour. \n\nIn the ongoing conflict in Ukraine, reports indicate that Moscow has launched deadly strikes on the city of Kharkiv. Three individuals have tragically lost their lives as Russian forces continue their attacks. Meanwhile, the United States has announced its decision to cut military aid to Kyiv amidst the escalating situation.\n\nIn other news, tensions between Israel and Iran have heightened, with lawmakers reportedly shot in the latest developments. The situation remains fluid as international observers monitor the unfolding events in the region closely.\n\nFurthermore, a mistrial has been declared on a rape count in a high-profile case involving Harvey W. The legal proceedings continue to draw significant public attention, with outcomes anticipated in the coming days.\n\nThat concludes tonight's news update.",
+          "timestamp": "2025-06-16T11:31:58.224286"
         }
       ],
-      "created_at": "2025-06-16T15:58:30.214142",
-      "last_updated": "2025-06-16T15:58:30.214142"
+      "created_at": "2025-06-16T11:31:58.224304",
+      "last_updated": "2025-06-16T11:31:58.224304"
+    },
+    {
+      "session_id": "c9c69d0d-8282-4e6a-9833-00812e27115a",
+      "messages": [
+        {
+          "role": "user",
+          "content": "what are the latest news today?",
+          "timestamp": "2025-06-16T11:33:11.095426"
+        },
+        {
+          "role": "assistant",
+          "content": "Breaking news this hour. \n\nIn the latest developments, Moscow has launched deadly strikes on Kharkiv in Ukraine, resulting in three casualties. Concurrently, the United States has announced its decision to cut military aid to Kyiv. Russian forces continued overnight drone attacks on Tuesday into Wednesday, escalating tensions in the region.\n\nMeanwhile, in other news, a mistrial has been declared on a rape count in the Harvey Weinstein case. This development comes as the legal proceedings against the former Hollywood producer continue to unfold.\n\nAdditionally, in World News, conflicts between Israel and Iran have intensified, with lawmakers shot in the midst of escalating tensions. The situation remains fluid, with global implications on the horizon.\n\nStay tuned for further updates on these developing stories.\n\nThat concludes tonight's news update.",
+          "timestamp": "2025-06-16T11:33:16.040078"
+        }
+      ],
+      "created_at": "2025-06-16T11:33:16.040092",
+      "last_updated": "2025-06-16T11:33:16.040092"
     }
   ]
 }

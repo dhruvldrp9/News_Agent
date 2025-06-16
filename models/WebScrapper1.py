@@ -1,7 +1,7 @@
+
 import requests
 from bs4 import BeautifulSoup
 import re
-import spacy
 import chardet
 
 
@@ -14,15 +14,6 @@ class WebScraper:
         :param output_dir: Directory to save scraped content
         """
         self.url = None
-        # self.base_url = urllib.parse.urlparse(url).scheme + "://" + urllib.parse.urlparse(url).netloc
-        
-        # Load spaCy for text cleaning
-        try:
-            self.nlp = spacy.load('en_core_web_sm')
-        except OSError:
-            print("Downloading spaCy English model...")
-            spacy.cli.download('en_core_web_sm')
-            self.nlp = spacy.load('en_core_web_sm')
 
     def fetch_page_content(self) -> requests.Response:
         """
@@ -54,7 +45,7 @@ class WebScraper:
 
     def clean_text(self, text: str) -> str:
         """
-        Clean extracted text using spaCy
+        Clean extracted text using basic regex operations
         Remove HTML tags, scripts, and unnecessary whitespace
         
         :param text: Input text to clean
@@ -63,13 +54,19 @@ class WebScraper:
         # Remove HTML tags
         text = re.sub(r'<.*?>', '', text)
         
-        # Process with spaCy
-        doc = self.nlp(text)
+        # Remove extra whitespace and normalize
+        text = re.sub(r'\s+', ' ', text.strip())
         
-        # Extract clean text
-        cleaned_text = ' '.join([token.text for token in doc if not token.is_space])
+        # Remove special characters but keep basic punctuation
+        text = re.sub(r'[^\w\s.,!?;:\-\'"()]', ' ', text)
         
-        return cleaned_text
+        # Remove excessive punctuation
+        text = re.sub(r'[.,!?;:]{2,}', '.', text)
+        
+        # Clean up multiple spaces again
+        text = re.sub(r'\s+', ' ', text.strip())
+        
+        return text
 
     def save_webpage_text(self, soup: BeautifulSoup):
         """

@@ -5,6 +5,7 @@ import json
 import uuid
 from functools import wraps
 from datetime import datetime, timedelta
+from groq import Groq
 import time
 from elevenlabs import ElevenLabs
 from models.chat_model import generate_response
@@ -527,5 +528,5 @@ def speak():
 
 if __name__ == '__main__':
     debug_mode = os.environ.get('FLASK_DEBUG', 'False').lower() == 'true'
-    port = int(os.environ.get('PORT', 5001))
+    port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port, debug=debug_mode)
