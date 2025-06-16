@@ -43,7 +43,6 @@ logs/
 log/
 
 # Audio files
-audio_recordings/
 *.mp3
 *.wav
 *.ogg
