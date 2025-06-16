@@ -5,7 +5,6 @@ import json
 import uuid
 from functools import wraps
 from datetime import datetime, timedelta
-from groq import Groq
 import time
 from elevenlabs import ElevenLabs
 from models.chat_model import generate_response
