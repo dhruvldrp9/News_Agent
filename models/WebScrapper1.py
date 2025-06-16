@@ -1,9 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import re
-import nltk
-from nltk.tokenize import word_tokenize
-from nltk.corpus import stopwords
+import spacy
 import chardet
 
 
@@ -18,16 +16,13 @@ class WebScraper:
         self.url = None
         # self.base_url = urllib.parse.urlparse(url).scheme + "://" + urllib.parse.urlparse(url).netloc
         
-        # Download required NLTK data
+        # Load spaCy for text cleaning
         try:
-            nltk.data.find('tokenizers/punkt')
-        except LookupError:
-            nltk.download('punkt')
-        try:
-            nltk.data.find('corpora/stopwords')
-        except LookupError:
-            nltk.download('stopwords')
-        self.stop_words = set(stopwords.words('english'))
+            self.nlp = spacy.load('en_core_web_sm')
+        except OSError:
+            print("Downloading spaCy English model...")
+            spacy.cli.download('en_core_web_sm')
+            self.nlp = spacy.load('en_core_web_sm')
 
     def fetch_page_content(self) -> requests.Response:
         """
@@ -59,7 +54,7 @@ class WebScraper:
 
     def clean_text(self, text: str) -> str:
         """
-        Clean extracted text using NLTK
+        Clean extracted text using spaCy
         Remove HTML tags, scripts, and unnecessary whitespace
         
         :param text: Input text to clean
@@ -68,14 +63,11 @@ class WebScraper:
         # Remove HTML tags
         text = re.sub(r'<.*?>', '', text)
         
-        # Tokenize text
-        tokens = word_tokenize(text)
+        # Process with spaCy
+        doc = self.nlp(text)
         
-        # Remove stopwords and non-alphabetic tokens
-        cleaned_tokens = [token for token in tokens if token.isalpha() and token.lower() not in self.stop_words]
-        
-        # Join tokens back into text
-        cleaned_text = ' '.join(cleaned_tokens)
+        # Extract clean text
+        cleaned_text = ' '.join([token.text for token in doc if not token.is_space])
         
         return cleaned_text
 

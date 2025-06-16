@@ -1,7 +1,7 @@
 import os
 import time
 from openai import OpenAI
-from serpapi.google_search import GoogleSearch
+from serpapi import GoogleSearch
 from models.WebScrapper1 import WebScraper
 from models.summarizer import TextSummarizer
 from elevenlabs import ElevenLabs
@@ -65,53 +65,46 @@ class GPTConversationSystem:
             "role":
             "system",
             "content":
-            """You are an AI News Companion designed to discuss current events in a natural conversational manner. Your communication must be TTS friendly.
+            """You are delivering live news broadcasts. Follow these strict guidelines:
 
-                Core Communication Guidelines:
-                1 Speak in clear natural language
-                2 Avoid special characters like asterisks or symbols
-                3 Use straightforward sentence structures
-                4 Prioritize clarity and readability
+                DELIVERY STYLE:
+                • Sound like a professional TV news broadcast
+                • Use proper news broadcasting rhythm and pacing
+                • Speak with authority and gravitas
+                • Never sound conversational or casual
 
-                News Interaction Approach:
-                • Transform news data into engaging narratives
-                • Provide context with simple explanations
-                • Maintain warm approachable tone
-                • Adapt to user's interest level
+                OPENING FORMATS:
+                • "Breaking news this hour..."
+                • "Here are tonight's top headlines..."
+                • "Good evening. Tonight's top stories..."
 
-                Conversation Principles:
-                • Treat news as interactive dialogue
-                • Ask thoughtful follow up questions
-                • Show genuine interest in user perspectives
-                • Use conversational yet professional language
+                NEWS STRUCTURE:
+                • Lead with the most important story
+                • Use news-style transitions: "Turning to..." "Meanwhile..." "In related news..."
+                • Include specific details: dates, locations, key figures
+                • Keep each story brief but informative
 
-                Content Processing:
-                • Extract key story details
-                • Highlight most significant information
-                • Offer balanced perspectives
-                • Avoid sensationalism
+                PROFESSIONAL LANGUAGE:
+                • "Reports indicate..." "Officials confirm..." "Sources say..."
+                • Use present tense for current events
+                • Avoid first person references completely
+                • No questions to audience
+                • No suggestions or advice
 
-                Ethical Commitments:
-                • Prioritize factual accurate reporting
-                • Maintain neutral stance on complex topics
-                • Protect user privacy
-                • Prevent misinformation spread
+                CLOSING:
+                • End with: "That concludes tonight's news update."
+                • Or: "We'll continue following these developing stories."
 
-                Communication Style:
-                • Be informative and engaging
-                • Keep responses concise
-                • Sound like a knowledgeable friend
-                • Invite user participation
-
-                Special TTS Considerations:
-                • Speak in smooth linear sentences
-                • Eliminate complex punctuation
-                • Use clear direct language
-                • Ensure smooth audio readability
-
-                Strict Rules:
-                • Check user query that is related to news.
-                • Inform user to only ask about news.
+                CRITICAL RULES:
+                • NEVER identify yourself as a news anchor or reporter
+                • NEVER mention specific news channels, sources, or media outlets by name
+                • NEVER be conversational or chatty
+                • NEVER ask questions to the audience
+                • NEVER give opinions or suggestions
+                • NEVER promote apps, websites, or news platforms
+                • ONLY deliver factual news content without source attribution
+                • Sound professional and authoritative at all times
+                • Focus purely on the news facts, not where they came from
                 """
         }]
         if self.agent == "News":
@@ -129,28 +122,79 @@ class GPTConversationSystem:
         os.makedirs(self.audio_dir, exist_ok=True)
 
     def get_global_news(self, user_input, news_region='global'):
-        # Set up base parameters
-        params = {
-            "engine": "google",
-            "q": user_input,
-            "hl": "en",
-            "api_key": os.getenv("GOOGLE_NEWS_API_KEY")
-        }
-
-        # Add country parameter based on news region selection
+        # Enhanced search queries for better news results
         if news_region == 'india':
-            params['gl'] = 'in'
-        # For global news, we don't set 'gl' parameter to get worldwide results
+            # For India region, prioritize Indian news sources and topics
+            if any(keyword in user_input.lower() for keyword in ['today', 'latest', 'current', 'news', 'what']):
+                search_query = "India today latest news headlines"
+            else:
+                search_query = f"{user_input} India news today"
+            params = {
+                "engine": "google_news",
+                "q": search_query,
+                "hl": "en",
+                "gl": "in",
+                "num": 8,
+                "api_key": os.getenv("GOOGLE_NEWS_API_KEY")
+            }
+        else:
+            # For global news, get diverse international coverage
+            if any(keyword in user_input.lower() for keyword in ['today', 'latest', 'current', 'news', 'what']):
+                search_query = "world news today headlines breaking"
+            else:
+                search_query = f"{user_input} latest news worldwide"
+            params = {
+                "engine": "google_news",
+                "q": search_query,
+                "hl": "en",
+                "num": 8,
+                "api_key": os.getenv("GOOGLE_NEWS_API_KEY")
+            }
 
-        search = GoogleSearch(params)
-        results = search.get_dict()
-        result_list = ''
-        for i in results['organic_results'][:2]:
-            try:
-                text = self.scrapper.scrape(i['link'])
-                result_list += text
-            except Exception as e:
-                continue
+        try:
+            search = GoogleSearch(params)
+            results = search.get_dict()
+            result_list = ''
+            
+            if 'news_results' in results:
+                for i, article in enumerate(results['news_results'][:5]):
+                    try:
+                        # Get article content
+                        if 'link' in article:
+                            text = self.scrapper.scrape(article['link'])
+                            if text:
+                                title = article.get('title', 'No title')
+                                snippet = article.get('snippet', '')
+                                source = article.get('source', 'Unknown source')
+                                date = article.get('date', 'No date')
+                                
+                                article_content = f"\n\nArticle {i+1}:\nTitle: {title}\nSource: {source}\nDate: {date}\nSnippet: {snippet}\nContent: {text[:1000]}..."
+                                result_list += article_content
+                    except Exception as e:
+                        print(f"Error scraping article: {str(e)}")
+                        continue
+            
+            # If no news results, try organic results
+            if not result_list and 'organic_results' in results:
+                for i, article in enumerate(results['organic_results'][:3]):
+                    try:
+                        if 'link' in article:
+                            text = self.scrapper.scrape(article['link'])
+                            if text:
+                                title = article.get('title', 'No title')
+                                snippet = article.get('snippet', '')
+                                
+                                article_content = f"\n\nArticle {i+1}:\nTitle: {title}\nSnippet: {snippet}\nContent: {text[:1000]}..."
+                                result_list += article_content
+                    except Exception as e:
+                        print(f"Error scraping organic result: {str(e)}")
+                        continue
+            
+            return result_list if result_list else "No recent news articles found for your query."
+            
+        except Exception as e:
+            print(f"Error fetching news: {str(e)}")
+            return "Unable to fetch news at this time. Please try again later."
 
     def get_gpt_response(self,
                          user_input: str,
@@ -168,13 +212,20 @@ class GPTConversationSystem:
                 self.last_context_refresh = current_time
 
             if self.agent == "News":
-                user_input = f"""Here is what found on google search news: {self.get_global_news(user_input, news_region)}.
-                You need to answer users query with your defined role and this available data only.
+                news_data = self.get_global_news(user_input, news_region)
+                
+                if "No recent news articles found" in news_data or "Unable to fetch news" in news_data:
+                    user_input = f"""User asked: {user_input}
 
-                here is a user query: {user_input}.
+No current news data was found for this query. Please respond as a professional news anchor that you are currently unable to access the latest news updates for this specific query. Suggest they try asking about general news topics like world news, politics, technology, business, or sports."""
+                else:
+                    user_input = f"""Here is the current news data for the user's query:
 
-                answer user query.
-                """
+{news_data}
+
+User originally asked: {user_input}
+
+Present this as a professional news anchor delivering today's top headlines. Focus on the 3-4 most important stories from the data, providing clear headlines and factual reporting."""
 
             # Add user message to conversation
             self.conversation_history.append({
@@ -187,7 +238,7 @@ class GPTConversationSystem:
                 model="gpt-3.5-turbo",
                 messages=self.conversation_history,
                 temperature=0.7,
-                max_tokens=4000,
+                max_tokens=1000,
                 top_p=1,
                 stream=False,
             )

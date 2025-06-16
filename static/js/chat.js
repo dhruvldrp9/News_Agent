@@ -570,8 +570,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 setTimeout(() => {
                     addMessageToChat('assistant', data.response);
                     loadChatHistory();
-                    // Ensure we scroll to the latest message
-                    setTimeout(() => scrollToBottom(), 300);
+                    // Force multiple scroll attempts to ensure it works
+                    scrollToBottom();
+                    setTimeout(scrollToBottom, 100);
+                    setTimeout(scrollToBottom, 300);
                 }, 500); // Slight delay for better UX
             }
         })
@@ -626,15 +628,18 @@ document.addEventListener('DOMContentLoaded', function() {
         messageDiv.appendChild(messageContent);
         chatMessages.appendChild(messageDiv);
 
-        // Auto-scroll to bottom with smooth animation
+        // Immediate scroll to bottom
         scrollToBottom();
     }
 
     function scrollToBottom() {
-        chatMessages.scrollTo({
-            top: chatMessages.scrollHeight,
-            behavior: 'smooth'
-        });
+        // Force immediate scroll without animation for reliability
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+
+        // Also force scroll after a brief delay to handle any layout changes
+        setTimeout(() => {
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }, 50);
     }
 
     function displayChatHistory(history) {

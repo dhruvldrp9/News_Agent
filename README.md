@@ -1,10 +1,10 @@
+
 # News Agent - AI-Powered News Assistant
 
 [![Live Demo](https://img.shields.io/badge/Live-Demo-brightgreen?style=for-the-badge&logo=vercel)](https://newsagent.dhruv.at)
 [![GitHub](https://img.shields.io/badge/GitHub-Repository-blue?style=for-the-badge&logo=github)](https://github.com/dhruvldrp9/News_Agent)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/dhruvldrp9/News_Agent)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](./LICENSE)
-
-![News Agent](https://github.com/user-attachments/assets/59877a36-1c0d-4deb-b49b-2d968e5c663c)
 
 ## 🌟 Overview
 News Agent is an intelligent AI-powered news assistant that provides real-time news updates and summaries. It combines the power of Google Search API, OpenAI's GPT models, and advanced text processing to deliver accurate and concise news information through both text and voice interfaces.
@@ -13,7 +13,7 @@ News Agent is an intelligent AI-powered news assistant that provides real-time n
 
 ## ✨ Features
 - **🔄 Real-Time News Updates**: Fetches latest news using Google Search API
-- **🧠 AI-Powered Summarization**: Generates concise summaries using Groq's Llama models
+- **🧠 AI-Powered Summarization**: Generates concise summaries using OpenAI GPT-3.5
 - **🌍 Regional News Support**: Switch between Global and India-specific news
 - **💬 Interactive Chat Interface**: User-friendly web interface for news interaction
 - **🎤 Voice Assistant**: Complete voice interaction with speech recognition and synthesis
@@ -25,22 +25,40 @@ News Agent is an intelligent AI-powered news assistant that provides real-time n
 
 ## 🛠️ Technologies Used
 - **Backend**: Python 3.12, Flask
-- **AI/ML**: OpenAI GPT-3.5 Turbo, SpaCy, NLTK
+- **AI/ML**: OpenAI GPT-3.5 Turbo, NLTK
 - **APIs**: Google Search API (SerpAPI), ElevenLabs Text-to-Speech
 - **Frontend**: HTML5, CSS3, JavaScript (ES6+)
 - **Web Scraping**: BeautifulSoup4, Requests
-- **Data Processing**: Pandas, NumPy
-- **Deployment**: Replit (Production)
+- **Deployment**: Vercel (Production), Replit (Development)
+
+## 🚀 Quick Deploy
+
+### Deploy to Vercel (Recommended)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/dhruvldrp9/News_Agent)
+
+1. Click the "Deploy with Vercel" button above
+2. Connect your GitHub account
+3. Set up environment variables in Vercel dashboard:
+   - `OPENAI_API_KEY`
+   - `GOOGLE_NEWS_API_KEY`
+   - `ELEVENLABS_API_KEY`
+   - `SECRET_KEY`
+4. Deploy!
+
+### Deploy to Replit
+1. Fork this repository
+2. Import to Replit from GitHub
+3. Set up environment variables in Replit Secrets
+4. Click Run!
 
 ## 📋 Prerequisites
-Before you begin, ensure you have the following:
 - Python 3.8 or higher
 - API keys for:
   - OpenAI (GPT API)
   - SerpAPI (Google Search)
   - ElevenLabs (Text-to-Speech)
 
-## 🚀 Installation
+## 🚀 Local Installation
 
 ### 1. Clone the Repository
 ```bash
@@ -53,12 +71,7 @@ cd News_Agent
 pip install -r requirements.txt
 ```
 
-### 3. Download SpaCy Model
-```bash
-python -m spacy download en_core_web_sm
-```
-
-### 4. Set Up Environment Variables
+### 3. Set Up Environment Variables
 Create a `.env` file in the root directory:
 ```bash
 cp env.example .env
@@ -71,13 +84,18 @@ FLASK_ENV=production
 OPENAI_API_KEY=your_openai_api_key_here
 GOOGLE_NEWS_API_KEY=your_serpapi_key_here
 ELEVENLABS_API_KEY=your_elevenlabs_api_key_here
-DOMAIN=newsagent.dhruv.at
+DOMAIN=localhost:5000
 PORT=5000
 ```
 
-### 5. Create Required Directories
+### 4. Create Required Directories
 ```bash
 mkdir -p data static/audio
+```
+
+### 5. Run the Application
+```bash
+python app.py
 ```
 
 ## 🔑 API Keys Setup
@@ -101,23 +119,6 @@ mkdir -p data static/audio
 3. Navigate to your profile settings
 4. Copy your API key to your `.env` file
 
-## 🚀 Running the Application
-
-### 1. Start the Server
-```bash
-python app.py
-```
-
-### 2. Access the Application
-Open your browser and navigate to:
-```
-http://localhost:5000
-```
-
-### 3. Create Account
-- Sign up with your email and password
-- Log in to access the news assistant
-
 ## 🎯 Usage
 
 ### Text Chat
@@ -131,22 +132,6 @@ http://localhost:5000
 2. Tap the microphone button to start
 3. Speak your news query
 4. Listen to AI-generated audio responses
-
-## 🏗️ Architecture
-
-### Core Components
-- **Flask Backend**: Handles routing, authentication, and API integration
-- **Groq Integration**: Powers AI responses using Llama-3.1-8b-instant model
-- **News Scraping**: Fetches and processes news from multiple sources
-- **Text Processing**: Summarizes content using NLTK
-- **Voice Features**: Speech recognition and text-to-speech synthesis
-
-### AI Model Configuration
-- **Model**: `gpt-3.5-turbo`
-- **Temperature**: 0.7 for balanced creativity
-- **Max tokens**: 1000 for comprehensive responses
-- **Voice model**: `eleven_flash_v2_5`
-- Audio format: MP3 (44.1kHz, 128kbps)
 
 ## 📁 Project Structure
 ```
@@ -168,6 +153,7 @@ News_Agent/
 │   └── audio/                 # Generated audio files
 ├── data/                      # User data and chat histories
 ├── requirements.txt           # Python dependencies
+├── vercel.json               # Vercel deployment config
 ├── .env.example              # Environment variables template
 └── README.md                 # This file
 ```
@@ -188,8 +174,7 @@ We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for deta
 ### Common Issues
 1. **API Key Errors**: Ensure all API keys are correctly set in your `.env` file
 2. **Dependencies Issues**: Try reinstalling with `pip install -r requirements.txt --force-reinstall`
-3. **SpaCy Model Missing**: Run `python -m spacy download en_core_web_sm`
-4. **Audio Not Playing**: Check browser permissions for audio playback
+3. **Audio Not Playing**: Check browser permissions for audio playback
 
 ### Debug Mode
 To run in debug mode for development:
@@ -202,7 +187,7 @@ python app.py
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 🙏 Acknowledgments
-- Groq for providing fast AI inference
+- OpenAI for providing powerful AI models
 - ElevenLabs for text-to-speech capabilities
 - SerpAPI for Google Search integration
 - The open-source community for various libraries used
@@ -211,10 +196,11 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Developer**: Dhruv Patel
 - **Email**: dhruv.ldrp9@gmail.com
 - **GitHub**: [@dhruvldrp9](https://github.com/dhruvldrp9)
+- **LinkedIn**: [Dhruv Patel](https://linkedin.com/in/dhruvp9)
 
 ## 🌟 Star this Repository
 If you find this project helpful, please give it a star! ⭐
 
 ---
 
-**Note**: This project uses Groq's fast AI models for enhanced performance and cost-effectiveness compared to traditional OpenAI models.
+**Live Demo**: [https://newsagent.dhruv.at](https://newsagent.dhruv.at)

@@ -1,109 +1,244 @@
 {
   "2c1264a8-1505-417b-964f-3dbfc29198da": [
     {
-      "session_id": "4b46430b-fde3-4298-affe-61d4ad8f6ece",
+      "session_id": "40da1ed0-7db2-4be6-b5bf-e005d083e47e",
       "messages": [
         {
           "role": "user",
-          "content": "Show me the latest news headlines",
-          "timestamp": "2025-06-14T01:46:19.736737"
+          "content": "what are the latest news today?",
+          "timestamp": "2025-06-13T18:18:48.447464"
         },
         {
           "role": "assistant",
-          "content": "I'm here to assist you with the latest news headlines. What specific topic are you interested in today? Feel free to let me know so I can provide you with the most up-to-date information.",
-          "timestamp": "2025-06-14T01:46:24.199894"
+          "content": "I'm here to provide you with the latest news updates. Unfortunately, you haven't provided any specific news data for me to reference. However, I can suggest some popular news sources to get you started.\n\nIn the absence of specific data, I can give you a general idea about how you can find the latest news today. You can visit trusted news websites such as BBC News, CNN, or Al Jazeera to get the latest updates on global events. You can also check online news aggregators like Google News or Apple News for a compilation of top stories from various sources.\n\nIf you could provide me with more information or a specific topic you're interested in, I'd be happy to try and find the latest news for you.",
+          "timestamp": "2025-06-13T18:18:58.069605"
         }
       ],
-      "created_at": "2025-06-14T01:46:24.199908",
-      "last_updated": "2025-06-14T01:46:24.199908"
+      "created_at": "2025-06-13T18:18:58.069620",
+      "last_updated": "2025-06-13T18:18:58.069620"
     },
     {
-      "session_id": "e9c9063f-4776-40ae-80b8-683a5a79a9b0",
+      "session_id": "98abe30d-ab5f-4909-8b09-faf10ab5710f",
       "messages": [
         {
           "role": "user",
-          "content": "Show me the latest news headlines",
-          "timestamp": "2025-06-14T01:47:24.785392"
+          "content": "what are the latest news today?",
+          "timestamp": "2025-06-13T18:20:40.165585"
         },
         {
           "role": "assistant",
-          "content": "I'm sorry, but I couldn't find any specific news headlines to share at the moment. If you have any other questions or topics you'd like to discuss, feel free to let me know! Remember, I'm here to chat about the latest news and events.",
-          "timestamp": "2025-06-14T01:47:28.801204"
+          "content": "I'd be happy to help you with the latest news. However, I don't have any specific information about current events right now. Can you please tell me what type of news you are interested in, such as sports, politics, or entertainment? That way, I can try to provide you with more relevant information. Alternatively, you can also provide me with a specific topic or keyword, and I'll do my best to give you an update on the latest news related to that topic.",
+          "timestamp": "2025-06-13T18:20:49.323754"
         }
       ],
-      "created_at": "2025-06-14T01:47:28.801236",
-      "last_updated": "2025-06-14T01:47:28.801236"
+      "created_at": "2025-06-13T18:20:49.323766",
+      "last_updated": "2025-06-13T18:20:49.323766"
     },
     {
-      "session_id": "6cc27634-ddd5-4915-b185-7da14826e4ec",
+      "session_id": "4ca81442-608f-4bdc-91ba-63ec25a0e8dd",
       "messages": [
         {
           "role": "user",
           "content": "Show me the latest news headlines",
-          "timestamp": "2025-06-14T01:48:32.006192"
+          "timestamp": "2025-06-13T18:23:23.840135"
         },
         {
           "role": "assistant",
-          "content": "I'm here to help with the latest news headlines! However, based on the available data, there are currently no specific news headlines provided to discuss. If you have any other questions or topics you'd like to learn about, feel free to let me know!",
-          "timestamp": "2025-06-14T01:48:38.187220"
-        },
-        {
-          "role": "user",
-          "content": "tell me about ahmedabad plane crash",
-          "timestamp": "2025-06-14T01:48:49.399128"
-        },
-        {
-          "role": "assistant",
-          "content": "I'm here to provide information about the Ahmedabad plane crash. However, based on the available data, there are no specific details or news articles provided about an incident involving a plane crash in Ahmedabad. If you have any other questions or topics you'd like to explore, please feel free to ask!",
-          "timestamp": "2025-06-14T01:48:54.461261"
+          "content": "Here are the latest news headlines for you. The current news includes updates on the Israel-Gaza war, a cricket match between India and New Zealand, and information on Diwali from the government. In the field of education, the UPSC Prelims Result 2025 has been declared. You can also check results for various school boards such as the UP Board, Bihar Board, and MP Board. Additionally, there are updates on exam results like the JAC 12th Result, RBSE Result 2025, and CBSE 10th and 12th results. In other news, the NEET Result 2025 is expected to be announced soon. Would you like me to provide more details on any of these topics or is there something specific you're interested in?",
+          "timestamp": "2025-06-13T18:23:31.661849"
         }
       ],
-      "created_at": "2025-06-14T01:48:38.187236",
-      "last_updated": "2025-06-14T01:48:54.461321"
+      "created_at": "2025-06-13T18:23:31.661862",
+      "last_updated": "2025-06-13T18:23:31.661862"
     },
     {
-      "session_id": "3856dc5b-5af6-4f69-b473-57c9a2a42fbf",
+      "session_id": "27a42bf2-525c-4346-b10d-d10be26c6233",
       "messages": [
         {
           "role": "user",
-          "content": "Show me the latest news headlines",
-          "timestamp": "2025-06-14T01:51:07.255423"
+          "content": "what are the latest news today",
+          "timestamp": "2025-06-13T18:28:09.853936"
         },
         {
           "role": "assistant",
-          "content": "I'm here to help you with the latest news headlines. What topic are you interested in today?",
-          "timestamp": "2025-06-14T01:51:09.433912"
+          "content": "I dont have any information about the latest news. You can ask me about any specific news you found on google search and I can help you to discuss that. I can only answer your queries related to news so please ask me about any news.",
+          "timestamp": "2025-06-13T18:28:18.759003"
+        },
+        {
+          "role": "user",
+          "content": "tell me more in detail about Ahmedabad airplane",
+          "timestamp": "2025-06-13T18:28:37.436952"
+        },
+        {
+          "role": "assistant",
+          "content": "I can tell you more about the Ahmedabad airplane crash. An Air India flight from Ahmedabad to London crashed near the airport shortly after takeoff. The plane was departing from Sardar Vallabhbhai Patel International Airport in Ahmedabad. Unfortunately, the crash resulted in the loss of 265 lives. The incident occurred in the Meghani area near the airport. If you would like to know more, I can try to provide additional information based on the available news. Would you like to know more about the possible cause of the crash or any other details?",
+          "timestamp": "2025-06-13T18:28:52.378231"
         }
       ],
-      "created_at": "2025-06-14T01:51:09.433927",
-      "last_updated": "2025-06-14T01:51:09.433927"
+      "created_at": "2025-06-13T18:28:18.759032",
+      "last_updated": "2025-06-13T18:28:52.378249"
     },
     {
-      "session_id": "f1be69a9-f10a-45d6-92c7-067c914a3168",
+      "session_id": "8d15b062-f307-40dc-9a12-b50c630a3106",
+      "messages": [
+        {
+          "role": "user",
+          "content": "what are the latest news today",
+          "timestamp": "2025-06-13T18:34:23.797716"
+        },
+        {
+          "role": "assistant",
+          "content": "I'm here to provide you with the latest news, but it seems like I don't have any current information available. I've checked and couldn't find any recent news updates. Can you please tell me what topics you're interested in, such as politics, sports, or entertainment? That way, I can try to find some relevant information for you. Remember, I can only discuss news-related topics, so let's focus on finding something interesting to talk about.",
+          "timestamp": "2025-06-13T18:34:28.912670"
+        }
+      ],
+      "created_at": "2025-06-13T18:34:28.912683",
+      "last_updated": "2025-06-13T18:34:28.912683"
+    },
+    {
+      "session_id": "cd8690a7-f6e2-426c-9350-201fe9961e46",
+      "messages": [
+        {
+          "role": "user",
+          "content": "what are the latest news today",
+          "timestamp": "2025-06-13T18:42:15.208870"
+        },
+        {
+          "role": "assistant",
+          "content": "I'm here to help you with the latest news today! Since there isn't any specific news data provided, I encourage you to share any topics or areas of interest you'd like to know more about. Feel free to let me know what you're curious about, and I'll do my best to provide you with relevant information.",
+          "timestamp": "2025-06-13T18:42:20.816302"
+        }
+      ],
+      "created_at": "2025-06-13T18:42:20.816315",
+      "last_updated": "2025-06-13T18:42:20.816315"
+    },
+    {
+      "session_id": "f77c2253-25f4-4e69-85a2-4ea080cbaf0c",
+      "messages": [
+        {
+          "role": "user",
+          "content": "latest news today",
+          "timestamp": "2025-06-16T09:19:06.411947"
+        },
+        {
+          "role": "assistant",
+          "content": "I'm here to help with the latest news today. Since there was no specific news content mentioned in your search from Google, I'll provide you with a general overview of some current events. What specific topics are you interested in hearing about today?",
+          "timestamp": "2025-06-16T09:19:19.750020"
+        },
+        {
+          "role": "user",
+          "content": "what are the latest news today",
+          "timestamp": "2025-06-16T09:19:53.274163"
+        },
+        {
+          "role": "assistant",
+          "content": "I'm here to assist with the latest news today. While there is no specific news content available from your Google search, I can share some general updates from various categories like world news, technology, entertainment, or sports. What topic are you most interested in hearing about today?",
+          "timestamp": "2025-06-16T09:20:03.476397"
+        },
+        {
+          "role": "user",
+          "content": "What are the latest news today?",
+          "timestamp": "2025-06-16T09:23:26.338889"
+        },
+        {
+          "role": "assistant",
+          "content": "Today's news covers a range of topics from different sources. \n\nFrom the Times of India, the top news of the day includes updates from various cities in India, spanning from Mumbai to Delhi to Hyderabad and many more. The article seems to capture a wide array of local news and events.\n\nMoving on to The Economic Times, Prime Minister Modi has been honored with Cyprus' highest civilian award, the Grand Cross of the Order of Makarios III. This recognition highlights significant international relations and diplomatic achievements.\n\nMint provides an update on COVID-19 in India, reporting 7,264 active cases with 11 new deaths recorded as of today. This data sheds light on the ongoing impact of the pandemic in the country.\n\nLastly, Al Jazeera discusses India's decision not to join the condemnation of Israel's attacks on Iran within the SCO. This geopolitical stance showcases India's nuanced position on international conflicts.\n\nThese articles offer a glimpse into the diverse news landscape, covering local updates, international relations, health concerns, and diplomatic decisions. Each piece contributes to a multifaceted view of the latest events shaping the day.",
+          "timestamp": "2025-06-16T09:23:35.131302"
+        },
+        {
+          "role": "user",
+          "content": "what is the latest news today?",
+          "timestamp": "2025-06-16T09:39:13.616795"
+        },
+        {
+          "role": "assistant",
+          "content": "Hey there! I've got some interesting updates from the news for you today.\n\nFirst off, PM Modi is making headlines as he reaches Cyprus on the first leg of his three-nation tour. This visit holds significance as it showcases diplomatic relations and important discussions between countries. It's always fascinating to see how such visits shape international partnerships and collaborations.\n\nNext, the cricket enthusiasts will be thrilled to hear about the latest cricket news updates and live scores. Cricket is a sport that brings people together, and staying updated on the latest matches and scores is always exciting for fans around the world.\n\nLastly, there are top school assembly news headlines covering international, sports, and national news for June 14th. These headlines provide a snapshot of key events shaping various aspects of our world, giving us insights into important developments across different sectors.\n\nWhat caught your attention the most from these updates? Would you like to dive deeper into any of these stories?",
+          "timestamp": "2025-06-16T09:39:21.385228"
+        },
+        {
+          "role": "user",
+          "content": "what are the latest news today?",
+          "timestamp": "2025-06-16T09:41:30.193743"
+        },
+        {
+          "role": "assistant",
+          "content": "We are currently unable to access the latest news updates.",
+          "timestamp": "2025-06-16T09:41:34.817465"
+        },
+        {
+          "role": "user",
+          "content": "what are the latest news today?",
+          "timestamp": "2025-06-16T09:44:28.799096"
+        },
+        {
+          "role": "assistant",
+          "content": "Good day, here are today's top headlines:\n\nHeadline 1: PM Modi Embarks on Three-Nation Tour, Starting in Cyprus\nOn June 16, 2025, Prime Minister Modi began his three-nation tour with a visit to Cyprus. This marks the first leg of his international trip, aiming to strengthen bilateral ties and cooperation.\n\nHeadline 2: Second Batch of NAKSHA Phase-2 Training Set to Commence\nThe second batch of NAKSHA Phase-2 training is scheduled to begin, offering participants the opportunity to enhance their skills and knowledge in this program. The training is a significant step towards further development and implementation.\n\nHeadline 3: School Assembly News Highlights International, Sports, and National Updates\nThe latest school assembly news featured a comprehensive overview of international, sports, and national news for June 14. This compilation provides students with insights into current events across various sectors.\n\nHeadline 4: The Hindu Reports Top News Updates for June 11 and June 10, 2025\nThe Hindu highlighted the top news stories for June 11 and June 10, 2025, offering readers a roundup of significant developments from those dates. This summary provides a quick overview of key events for informed reading.\n\nThat concludes today's news update. Thank you for tuning in.",
+          "timestamp": "2025-06-16T09:44:35.455850"
+        }
+      ],
+      "created_at": "2025-06-16T09:19:19.750038",
+      "last_updated": "2025-06-16T09:44:35.455869"
+    },
+    {
+      "session_id": "29990039-21a3-40ce-b5a2-25adac4fc3e9",
+      "messages": [
+        {
+          "role": "user",
+          "content": "what are the latest news today?",
+          "timestamp": "2025-06-16T09:49:27.983186"
+        },
+        {
+          "role": "assistant",
+          "content": "Good evening. I'm your News Anchor with tonight's top stories.\n\nBreaking news this hour...\n\nLeading the headlines today, Prime Minister Modi is embarking on a three-nation tour, starting with Cyprus. Reports indicate this marks the beginning of an important diplomatic journey for the Prime Minister.\n\nMeanwhile, in cricket news, the latest updates and live scores are available on India Today. Cricket enthusiasts can stay informed with the most recent match news.\n\nIn school assembly news, the second batch of NAKSHA Phase-2 training is set to begin. This training session promises to bring significant advancements in the field of education.\n\nThat's your news update. I'm [News Anchor] reporting.",
+          "timestamp": "2025-06-16T09:49:34.150304"
+        },
+        {
+          "role": "user",
+          "content": "what are the latest news today?",
+          "timestamp": "2025-06-16T09:53:48.126188"
+        },
+        {
+          "role": "assistant",
+          "content": "Breaking news this hour. \n\nLeading tonight's top stories, we turn to the latest developments on the international front. Reports indicate that Prime Minister Modi has commenced his three-nation tour, with his first stop being Cyprus. This visit marks a significant diplomatic effort by India, with PM Modi aiming to strengthen ties with key nations. \n\nMeanwhile, in the world of education, the Second Batch of NAKSHA Phase-2 Training is set to commence shortly. This training program holds importance for the education sector, aiming to enhance skills and knowledge in a critical area. \n\nIn sports news, cricket enthusiasts will be eager to learn about the latest match updates and live scores. Stay tuned for more details on the ongoing cricket events unfolding today. \n\nThat concludes tonight's news update. Stay informed as we continue to follow these developing stories.",
+          "timestamp": "2025-06-16T09:53:53.884091"
+        }
+      ],
+      "created_at": "2025-06-16T09:49:34.150321",
+      "last_updated": "2025-06-16T09:53:53.884123"
+    },
+    {
+      "session_id": "62edb412-f3a7-4c4c-938f-a72328cbaa8e",
+      "messages": [
+        {
+          "role": "user",
+          "content": "what are the latest news today?",
+          "timestamp": "2025-06-16T10:26:22.557635"
+        },
+        {
+          "role": "assistant",
+          "content": "Breaking news this hour. \n\nToday's top headlines on June 16, 2025:\n\n- Prime Minister Modi embarks on a three-nation tour, starting with Cyprus.\n- Second Batch of NAKSHA Phase-2 Training set to commence.\n- School Assembly News Headlines feature top international, sports, and national news for June 14.\n- Cricket enthusiasts can catch the latest match news updates and live scores.\n\nThat concludes tonight's news update.",
+          "timestamp": "2025-06-16T10:26:26.850641"
+        }
+      ],
+      "created_at": "2025-06-16T10:26:26.850656",
+      "last_updated": "2025-06-16T10:26:26.850656"
+    },
+    {
+      "session_id": "64aa271c-7df6-4bb0-800b-0b459349380e",
       "messages": [
         {
           "role": "user",
           "content": "Show me the latest news headlines",
-          "timestamp": "2025-06-14T01:51:51.175054"
+          "timestamp": "2025-06-16T15:58:24.798062"
         },
         {
           "role": "assistant",
-          "content": "I'm sorry, but I couldn't find any specific news headlines to share with you at the moment. If you have any other questions or topics you'd like to discuss, feel free to let me know!",
-          "timestamp": "2025-06-14T01:51:53.178990"
-        },
-        {
-          "role": "user",
-          "content": "ahmedabad crash plane",
-          "timestamp": "2025-06-14T01:52:03.710784"
-        },
-        {
-          "role": "assistant",
-          "content": "I'm sorry, but without specific information available on the Ahmedabad crash involving a plane, I'm unable to provide any details on this incident. If you have any other questions or topics you'd like to explore, feel free to share!",
-          "timestamp": "2025-06-14T01:52:12.631296"
+          "content": "Breaking news this hour. \n\nIn Ukraine, Moscow has launched deadly strikes on Kharkiv, resulting in three casualties. Simultaneously, the US has declared its intention to cut military aid to Kyiv amid escalating tensions.\n\nMeanwhile, in Iran, lawmakers have been shot as the conflict with Israel intensifies. The region remains on edge as the situation unfolds.\n\nAnd in the United States, preparations are underway for President Trump's military parade, coinciding with a significant Army anniversary event.\n\nThat concludes tonight's news update.",
+          "timestamp": "2025-06-16T15:58:30.214122"
         }
       ],
-      "created_at": "2025-06-14T01:51:53.179013",
-      "last_updated": "2025-06-14T01:52:12.631313"
+      "created_at": "2025-06-16T15:58:30.214142",
+      "last_updated": "2025-06-16T15:58:30.214142"
     }
   ]
 }
