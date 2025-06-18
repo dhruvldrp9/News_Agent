@@ -15,12 +15,12 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', secrets.token_hex(32))
-app.config['SESSION_COOKIE_SECURE'] = os.environ.get('FLASK_ENV') == 'production'
+app.config['SESSION_COOKIE_SECURE'] = True  # Always use secure cookies in production
 app.config['SESSION_COOKIE_HTTPONLY'] = True
-app.config['SESSION_COOKIE_SAMESITE'] = 'Strict'
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'  # Changed from 'Strict' for better compatibility
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=24)
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max upload
-app.config['SERVER_NAME'] = os.environ.get('DOMAIN', None)
+# Remove SERVER_NAME for serverless deployment
 
 # Initialize API clients
 from openai import OpenAI
@@ -28,11 +28,21 @@ client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
 eleven_client = ElevenLabs(api_key=os.getenv('ELEVENLABS_API_KEY'))
 
 # Initialize Supabase database
+db = None
 try:
-    db = SupabaseDB()
-    app.logger.info("Supabase database initialized successfully")
+    # Check if required environment variables are present
+    required_vars = ['SUPABASE_URL', 'SUPABASE_ANON_KEY']
+    missing_vars = [var for var in required_vars if not os.getenv(var)]
+    
+    if missing_vars:
+        app.logger.error(f"Missing environment variables: {missing_vars}")
+    else:
+        db = SupabaseDB()
+        app.logger.info("Supabase database initialized successfully")
 except Exception as e:
     app.logger.error(f"Failed to initialize Supabase database: {e}")
+    app.logger.error(f"SUPABASE_URL exists: {bool(os.getenv('SUPABASE_URL'))}")
+    app.logger.error(f"SUPABASE_ANON_KEY exists: {bool(os.getenv('SUPABASE_ANON_KEY'))}")
     db = None
 
 # Store conversation sessions
@@ -127,6 +137,20 @@ def increment_user_queries(user_id):
 @app.route('/')
 def index():
     return redirect(url_for('login'))
+
+@app.route('/debug/env')
+def debug_env():
+    """Debug endpoint to check environment variables (remove in production)"""
+    env_status = {
+        'OPENAI_API_KEY': bool(os.getenv('OPENAI_API_KEY')),
+        'ELEVENLABS_API_KEY': bool(os.getenv('ELEVENLABS_API_KEY')),
+        'SUPABASE_URL': bool(os.getenv('SUPABASE_URL')),
+        'SUPABASE_ANON_KEY': bool(os.getenv('SUPABASE_ANON_KEY')),
+        'SUPABASE_SERVICE_ROLE_KEY': bool(os.getenv('SUPABASE_SERVICE_ROLE_KEY')),
+        'SECRET_KEY': bool(os.getenv('SECRET_KEY')),
+        'DATABASE_INITIALIZED': db is not None
+    }
+    return jsonify(env_status)
 
 @app.route('/sitemap.xml')
 def sitemap():
@@ -320,6 +344,10 @@ def get_chat_history():
             app.logger.error(f"No user_id in session: {session}")
             return jsonify({'error': 'User not authenticated'}), 401
 
+        if not db:
+            app.logger.error("Database not initialized")
+            return jsonify({'error': 'Database not available', 'history': []}), 200
+
         user_history = get_user_chat_sessions(user_id)
 
         # Also restore conversation sessions from history
@@ -335,7 +363,7 @@ def get_chat_history():
         })
     except Exception as e:
         app.logger.error(f"Error getting chat history: {str(e)}")
-        return jsonify({'error': 'Failed to load chat history'}), 500
+        return jsonify({'error': 'Failed to load chat history', 'history': []}), 200
 
 @app.route('/chat/new', methods=['POST'])
 @login_required

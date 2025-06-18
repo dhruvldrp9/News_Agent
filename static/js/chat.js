@@ -91,7 +91,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     window.location.href = '/login';
                     return;
                 }
-                throw new Error('Failed to load chat history');
+                console.warn('Failed to load chat history, continuing without history');
+                // Don't throw error, continue with empty history
+                const historyData = { history: [] };
+                displayChatHistory([]);
+                await createNewChatSilent();
+                return;
             }
 
             const historyData = await historyResponse.json();
