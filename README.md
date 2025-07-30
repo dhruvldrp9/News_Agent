@@ -62,7 +62,7 @@ News Agent is an intelligent AI-powered news assistant that provides real-time n
 
 ### SerpAPI Key (Google Search)
 1. Visit [SerpAPI](https://serpapi.com/)
-2. Sign up for free account (100 searches/month)
+2. Sign up for free account (250 searches/month)
 3. Add to environment variables as `GOOGLE_NEWS_API_KEY`
 
 ### ElevenLabs API Key
